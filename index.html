@@ -132,6 +132,21 @@
         .size-btn { font-size: 16px; padding: 2px 15px; flex: none; }
         .size-display { font-size: 16px; font-weight: bold; color: var(--gold); min-width: 30px; text-align: center; }
 
+        /* 👑 العداد الديناميكي للصفحات 👑 */
+        .page-indicator {
+            position: fixed; bottom: 70px; left: 15px;
+            background: var(--box); color: var(--gold);
+            padding: 4px 12px; border: 1px solid var(--gold); border-radius: 15px;
+            font-size: 12px; font-weight: bold; font-family: Arial, sans-serif;
+            z-index: 9997; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: bottom 0.5s ease, opacity 0.5s ease; pointer-events: none;
+        }
+        
+        /* تأثير وضعية القراءة على العداد (ينزل للأسفل ويصبح شبه شفاف) */
+        body.reading-mode .page-indicator {
+            bottom: 15px; opacity: 0.6;
+        }
+
         #loading { text-align: center; font-size: 16px; color: var(--gold); padding: 20px; font-weight: bold; }
         #sentinel { height: 50px; } 
     </style>
@@ -143,6 +158,8 @@
         <select id="suraIndex" onchange="loadData('surah', this.value)"></select>
         <button class="fs-btn" id="fsBtn" onclick="toggleFullScreen()" title="ملء الشاشة">⛶</button>
     </div>
+
+    <div id="pageIndicator" class="page-indicator">الصفحة ١ / ١</div>
 
     <div class="settings-panel" id="settingsPanel">
         <div style="text-align:center; color:var(--gold); font-weight:bold; margin-bottom:5px;">⚙️ إعدادات المصحف</div>
@@ -167,7 +184,6 @@
                 <option value="#16A34A">💚 تمييز أخضر</option>
                 <option value="#3B82F6">💙 تمييز أزرق</option>
             </select>
-            
             <select class="setting-select" id="fontSelect" onchange="changeFont(this.value)">
                 <option value="'Amiri Quran', serif">✍️ خط أميري</option>
                 <option value="'Uthmanic', serif">✍️ خط عثمان طه</option>
@@ -239,24 +255,40 @@
         });
 
         function toggleSettings(e) {
-            e.stopPropagation();
-            document.getElementById('settingsPanel').classList.toggle('active');
+            e.stopPropagation(); document.getElementById('settingsPanel').classList.toggle('active');
         }
         document.addEventListener('click', (e) => {
             const panel = document.getElementById('settingsPanel');
-            if (panel.classList.contains('active') && !panel.contains(e.target)) {
-                panel.classList.remove('active');
-            }
+            if (panel.classList.contains('active') && !panel.contains(e.target)) { panel.classList.remove('active'); }
         });
+
+        // 🌟 دالة الحساب اللحظي للصفحات
+        const toAr = (n) => n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+        function updatePageIndicator() {
+            setTimeout(() => {
+                const h = window.innerHeight;
+                const scroll = window.scrollY;
+                const totalHeight = document.documentElement.scrollHeight;
+                let currentPage = Math.ceil((scroll + h) / h);
+                let totalPages = Math.ceil(totalHeight / h);
+                if(currentPage > totalPages) currentPage = totalPages;
+                document.getElementById('pageIndicator').innerText = `الصفحة ${toAr(currentPage)} / ${toAr(totalPages)}`;
+            }, 100);
+        }
+        // تفعيل العداد عند التمرير وتغيير حجم الشاشة
+        window.addEventListener('scroll', updatePageIndicator);
+        window.addEventListener('resize', updatePageIndicator);
 
         function changeTheme(val) { document.documentElement.setAttribute('data-theme', val); saveSetting('quran_theme', val); }
         function changeColor(val) { document.documentElement.style.setProperty('--mark-color', val); saveSetting('quran_color', val); }
-        function changeFont(val) { document.documentElement.style.setProperty('--font-family', val); saveSetting('quran_font', val); }
-        function changeLayout(val) { document.body.className = 'layout-' + val; saveSetting('quran_layout', val); }
+        function changeFont(val) { document.documentElement.style.setProperty('--font-family', val); saveSetting('quran_font', val); setTimeout(updatePageIndicator, 200); }
+        function changeLayout(val) { document.body.className = 'layout-' + val; saveSetting('quran_layout', val); setTimeout(updatePageIndicator, 200); }
+        
         function changeFontSize(step) {
             currentFontSize += step; if(currentFontSize < 8) currentFontSize = 8; if(currentFontSize > 60) currentFontSize = 60;
             document.documentElement.style.setProperty('--font-size', currentFontSize + 'px');
             document.getElementById('sizeDisplay').innerText = currentFontSize; saveSetting('quran_size', currentFontSize);
+            updatePageIndicator(); // تحديث العداد فور تغيير الحجم
         }
 
         function toggleFullScreen() {
@@ -270,7 +302,6 @@
             } catch(e) {}
         }
 
-        const toAr = (n) => n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
         function applyColors(text) {
             let res = text.replace(/(ٱللَّهِ|ٱللَّهُ|ٱللَّهَ|لِلَّهِ|اللَّهِ|اللَّهُ|اللَّهَ)/g, '<span class="allah">$1</span>');
             res = res.replace(/([\u06D6-\u06DC\u06DF-\u06E3\u06E8\u06E9\u06ED])/g, '<span class="m">$1</span>');
@@ -287,9 +318,7 @@
                 document.getElementById('loading').innerHTML = 'تم ختم القرآن الكريم 🌙';
                 document.getElementById('loading').style.display = 'block';
                 return;
-            } else {
-                document.getElementById('sentinel').style.display = 'block';
-            }
+            } else { document.getElementById('sentinel').style.display = 'block'; }
 
             isFetching = true; document.getElementById('loading').style.display = 'block';
             if (!append) { document.getElementById('content').innerHTML = ''; lastSuraRendered = ''; }
@@ -319,12 +348,11 @@
                 else { document.getElementById('content').innerHTML = html; window.scrollTo(0, 0); }
                 
                 currentMode = mode; currentIndex = index;
-                saveSetting('quran_last_mode', mode);
-                saveSetting('quran_last_index', index);
+                saveSetting('quran_last_mode', mode); saveSetting('quran_last_index', index);
                 
-            } catch (error) { 
-                document.getElementById('loading').innerHTML = '<span style="color:red">حدث خطأ في الاتصال، يرجى المحاولة.</span>'; 
-            } 
+                updatePageIndicator(); // تحديث العداد بعد جلب الآيات
+                
+            } catch (error) { document.getElementById('loading').innerHTML = '<span style="color:red">حدث خطأ في الاتصال، يرجى المحاولة.</span>'; } 
             finally { isFetching = false; if(document.getElementById('loading').innerHTML !== 'تم ختم القرآن الكريم 🌙') document.getElementById('loading').style.display = 'none'; }
         }
 
@@ -348,10 +376,12 @@
                 clearInterval(sInt); isS = false; 
                 btn.innerHTML = 'تشغيل ⏵'; btn.style.backgroundColor = 'var(--gold)'; btn.style.color = 'var(--bg)';
                 topBar.style.transform = 'translateY(0)'; bottomBar.style.transform = 'translateY(0)';
+                document.body.classList.remove('reading-mode'); // إعادة العداد لوضعه الطبيعي
             } else { 
                 sInt = setInterval(() => window.scrollBy(0, speed), 50); isS = true; 
                 btn.innerHTML = 'إيقاف ⏸'; btn.style.backgroundColor = '#DC2626'; btn.style.color = 'white';
                 topBar.style.transform = 'translateY(-100%)'; bottomBar.style.transform = 'translateY(100%)';
+                document.body.classList.add('reading-mode'); // تفعيل وضعية القراءة للعداد
             }
         }
 
