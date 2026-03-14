@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مصحف التهجد - النسخة الذهبية</title>
+    <title>مصحف التهجد - الشامل</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;700&family=El+Messiri:wght@400;700&family=Harmattan:wght@400;700&family=Lateef:wght@400;700&family=Markazi+Text:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Reem+Kufi:wght@400;700&family=Scheherazade+New:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     
@@ -167,11 +167,18 @@
                 <option value="#16A34A">💚 تمييز أخضر</option>
                 <option value="#3B82F6">💙 تمييز أزرق</option>
             </select>
+            
             <select class="setting-select" id="fontSelect" onchange="changeFont(this.value)">
                 <option value="'Amiri Quran', serif">✍️ خط أميري</option>
                 <option value="'Uthmanic', serif">✍️ خط عثمان طه</option>
+                <option value="'Scheherazade New', serif">✍️ خط شهرزاد</option>
                 <option value="'Lateef', serif">✍️ خط لطيف</option>
+                <option value="'Markazi Text', serif">✍️ خط مركزي</option>
+                <option value="'El Messiri', sans-serif">✍️ خط المسيري</option>
+                <option value="'Tajawal', sans-serif">✍️ خط تجوال</option>
+                <option value="'Cairo', sans-serif">✍️ خط القاهرة</option>
                 <option value="'Noto Naskh Arabic', serif">✍️ خط نسخ</option>
+                <option value="'Reem Kufi', sans-serif">✍️ خط كوفي</option>
             </select>
         </div>
         <div class="settings-row" style="justify-content:center; align-items:center; background:var(--bg); border:1px solid var(--gold); border-radius:6px; padding:5px;">
@@ -200,11 +207,8 @@
     <script>
         function saveSetting(key, value) { localStorage.setItem(key, value); }
         let currentFontSize = 16;
-        let currentMode = 'surah'; 
-        let currentIndex = 1; 
         
         document.addEventListener("DOMContentLoaded", () => {
-            // استرجاع كافة الإعدادات
             let savedSize = localStorage.getItem('quran_size');
             if(savedSize) { currentFontSize = parseInt(savedSize); document.documentElement.style.setProperty('--font-size', currentFontSize + 'px'); document.getElementById('sizeDisplay').innerText = currentFontSize; }
             let savedTheme = localStorage.getItem('quran_theme');
@@ -225,7 +229,6 @@
             suraSelect.innerHTML = '<option value="" disabled selected>📖 السورة</option>';
             suraNames.forEach((name, i) => suraSelect.innerHTML += `<option value="${i+1}">${i+1}. ${name}</option>`);
 
-            // 🌟 استرجاع مكان التلاوة الأخير (الذاكرة الجديدة)
             let savedMode = localStorage.getItem('quran_last_mode') || 'surah';
             let savedIndex = localStorage.getItem('quran_last_index') || 1;
             
@@ -235,7 +238,6 @@
             loadData(savedMode, savedIndex);
         });
 
-        // إغلاق الإعدادات عند النقر خارجها
         function toggleSettings(e) {
             e.stopPropagation();
             document.getElementById('settingsPanel').classList.toggle('active');
@@ -265,7 +267,7 @@
                 if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
                     requestFullScreen.call(docEl); document.getElementById('fsBtn').innerHTML = '✖';
                 } else { cancelFullScreen.call(doc); document.getElementById('fsBtn').innerHTML = '⛶'; }
-            } catch(e) {} // تجاهل الخطأ في المتصفحات التي تمنع الشاشة الكاملة
+            } catch(e) {}
         }
 
         const toAr = (n) => n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
@@ -280,7 +282,6 @@
         async function loadData(mode, index, append = false) {
             index = parseInt(index);
             
-            // 🌟 إغلاق محكم للجلب اللامحدود إذا تم ختم القرآن
             if ((mode === 'juz' && index > 30) || (mode === 'surah' && index > 114)) {
                 document.getElementById('sentinel').style.display = 'none';
                 document.getElementById('loading').innerHTML = 'تم ختم القرآن الكريم 🌙';
@@ -303,7 +304,6 @@
                     if (ayah.surah.name !== lastSuraRendered) {
                         lastSuraRendered = ayah.surah.name;
                         html += `<span class="sura-header">${lastSuraRendered}</span>`;
-                        // سورة الفاتحة (1) والتوبة (9) لا نضيف لهما بسملة كعنوان فرعي
                         if (ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
                             html += `<span class="basmalah">${applyColors("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")}</span>`; 
                         }
@@ -319,7 +319,6 @@
                 else { document.getElementById('content').innerHTML = html; window.scrollTo(0, 0); }
                 
                 currentMode = mode; currentIndex = index;
-                // حفظ مكان التلاوة
                 saveSetting('quran_last_mode', mode);
                 saveSetting('quran_last_index', index);
                 
