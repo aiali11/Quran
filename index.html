@@ -47,16 +47,24 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.3); transition: transform 0.5s ease;
         }
 
-        /* 👑 شريط التقدم الذهبي 👑 */
         .progress-container { position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: rgba(0,0,0,0.1); }
         .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease; }
 
         .top-bar select { background: var(--bg); color: var(--txt); border: 1px solid var(--gold); padding: 5px; border-radius: 6px; font-size: 13px; font-weight: bold; width: 40%; max-width: 300px; outline: none; font-family: 'Arial', sans-serif; }
         .fs-btn { background: var(--gold); color: var(--bg); border: none; padding: 5px 10px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; outline: none; }
 
-        .sura-header { text-align: center; font-size: calc(var(--font-size) * 1.2); color: var(--gold); border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); padding: 8px; margin: 30px 0 15px 0; display: block; font-weight: bold; box-shadow: 0 4px 0 -2px var(--bg), 0 5px 0 -2px var(--gold), 0 -4px 0 -2px var(--bg), 0 -5px 0 -2px var(--gold); }
-        .sura-header::before, .sura-header::after { content: ' ۞ '; font-size: 70%;}
-        .basmalah { text-align: center; font-size: var(--font-size); margin-bottom: 10px; display: block; color: var(--txt); }
+        /* 👑 التصميم الجديد: دمج السورة والبسملة في شريط واحد 👑 */
+        .combined-header {
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px;
+            border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold);
+            padding: 6px 10px; margin: 25px 0 10px 0;
+            box-shadow: 0 4px 0 -2px var(--bg), 0 5px 0 -2px var(--gold), 0 -4px 0 -2px var(--bg), 0 -5px 0 -2px var(--gold);
+            background-color: rgba(0,0,0,0.02); border-radius: 3px;
+        }
+        .sura-name { color: var(--gold); font-weight: bold; font-size: calc(var(--font-size) * 1.2); }
+        .sura-name::before, .sura-name::after { content: ' ۞ '; font-size: 70%; }
+        .basmalah-inline { color: var(--txt); font-size: var(--font-size); }
+
         .quran-text { font-size: var(--font-size); letter-spacing: -0.5px; word-spacing: -1.2px; transition: font-size 0.3s; }
         .ayah-num { position: relative; display: inline-flex; align-items: center; justify-content: center; width: calc(var(--font-size) * 1.8); height: calc(var(--font-size) * 1.8); font-size: calc(var(--font-size) * 0.8); font-family: Arial, sans-serif; font-weight: bold; color: var(--txt); margin: 0 4px; vertical-align: middle; z-index: 1; }
         .ayah-num::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--gold); -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; z-index: -1; }
@@ -70,7 +78,6 @@
         .size-btn { font-size: 16px; padding: 2px 15px; flex: none; }
         .size-display { font-size: 16px; font-weight: bold; color: var(--gold); min-width: 30px; text-align: center; }
 
-        /* 👑 العداد التحفيزي الجديد 👑 */
         .page-indicator {
             position: fixed; bottom: 70px; left: 15px; background: var(--box); color: var(--txt);
             padding: 6px 15px; border: 1px solid var(--gold); border-radius: 20px;
@@ -82,7 +89,6 @@
         .indicator-hl { color: var(--gold); font-size: 14px;}
         body.reading-mode .page-indicator { bottom: 15px; opacity: 0.5; }
 
-        /* 👑 رسالة التهنئة بالانتقال لجزء جديد 👑 */
         .toast {
             position: fixed; top: -60px; left: 50%; transform: translateX(-50%);
             background: var(--gold); color: var(--bg); padding: 10px 20px; border-radius: 20px;
@@ -148,7 +154,7 @@
         function saveSetting(key, value) { localStorage.setItem(key, value); }
         let currentFontSize = 16;
         let currentMode = 'surah'; let currentIndex = 1; let isFetching = false; let lastSuraRendered = '';
-        let activeChunkIndex = null; // لتتبع متى يتغير الجزء أو السورة
+        let activeChunkIndex = null; 
         
         document.addEventListener("DOMContentLoaded", () => {
             let savedSize = localStorage.getItem('quran_size'); if(savedSize) { currentFontSize = parseInt(savedSize); document.documentElement.style.setProperty('--font-size', currentFontSize + 'px'); document.getElementById('sizeDisplay').innerText = currentFontSize; }
@@ -172,12 +178,10 @@
 
         const toAr = (n) => n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
         
-        // 🌟 المحرك الذكي للإنجاز 🌟
         function calculateSmartProgress() {
             const chunks = document.querySelectorAll('.quran-chunk');
             let activeChunk = null; let activeRect = null;
             
-            // تحديد أي كتلة (جزء/سورة) تظهر في منتصف الشاشة الآن
             chunks.forEach(chunk => {
                 const rect = chunk.getBoundingClientRect();
                 if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) { activeChunk = chunk; activeRect = rect; }
@@ -187,7 +191,6 @@
                 const modeName = activeChunk.getAttribute('data-mode') === 'juz' ? 'الجزء' : 'السورة';
                 const itemIndex = parseInt(activeChunk.getAttribute('data-index'));
                 
-                // احتفالية الوصول لجزء/سورة جديدة
                 if (activeChunkIndex !== null && itemIndex > activeChunkIndex) {
                     const toast = document.getElementById('celebrationToast');
                     toast.innerText = `✨ ما شاء الله! بدأت الآن في ${modeName} ${toAr(itemIndex)}`;
@@ -197,14 +200,13 @@
                 activeChunkIndex = itemIndex;
 
                 const h = window.innerHeight;
-                let scrolledInside = Math.max(0, -activeRect.top); // كم بيكسل قرأنا من هذه الكتلة
+                let scrolledInside = Math.max(0, -activeRect.top); 
                 let currentPage = Math.floor(scrolledInside / h) + 1;
                 let totalPages = Math.ceil(activeRect.height / h);
                 let remaining = Math.max(0, totalPages - currentPage);
                 
                 let percent = Math.min(100, Math.max(0, ((scrolledInside + h) / activeRect.height) * 100));
 
-                // تحديث الواجهة التحفيزية
                 document.getElementById('indTitle').innerText = `${modeName} ${toAr(itemIndex)}`;
                 if(remaining > 0) {
                     document.getElementById('indDetails').innerText = `• متبقي ${toAr(remaining)} صفحات`;
@@ -215,8 +217,7 @@
             }
         }
 
-        window.addEventListener('scroll', calculateSmartProgress);
-        window.addEventListener('resize', calculateSmartProgress);
+        window.addEventListener('scroll', calculateSmartProgress); window.addEventListener('resize', calculateSmartProgress);
 
         function changeTheme(val) { document.documentElement.setAttribute('data-theme', val); saveSetting('quran_theme', val); }
         function changeColor(val) { document.documentElement.style.setProperty('--mark-color', val); saveSetting('quran_color', val); }
@@ -259,15 +260,22 @@
 
                 data.data.ayahs.forEach((ayah) => {
                     if (ayah.surah.name !== lastSuraRendered) {
-                        lastSuraRendered = ayah.surah.name; innerHtml += `<span class="sura-header">${lastSuraRendered}</span>`;
-                        if (ayah.surah.number !== 1 && ayah.surah.number !== 9) { innerHtml += `<span class="basmalah">${applyColors("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")}</span>`; }
+                        lastSuraRendered = ayah.surah.name;
+                        
+                        // 👑 التعديل الجديد: دمج السورة والبسملة في شريط واحد 👑
+                        innerHtml += `<div class="combined-header">`;
+                        innerHtml += `<span class="sura-name">${lastSuraRendered}</span>`;
+                        if (ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
+                            innerHtml += `<span class="basmalah-inline">${applyColors("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")}</span>`; 
+                        }
+                        innerHtml += `</div>`;
                     }
+                    
                     let text = ayah.text;
                     if (ayah.numberInSurah === 1 && text.includes("ٱلرَّحِيمِ") && ayah.surah.number !== 1 && ayah.surah.number !== 9) { text = text.replace(basmalahText, '').replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", '').trim(); }
                     innerHtml += `<span class="quran-text">${applyColors(text)}</span><span class="ayah-num">${toAr(ayah.numberInSurah)}</span> `;
                 });
 
-                // تغليف البيانات بكتلة مستقلة لكي يحسبها العداد الذكي
                 const chunkHtml = `<div class="quran-chunk" data-mode="${mode}" data-index="${index}">${innerHtml}</div>`;
 
                 if (append) { document.getElementById('content').insertAdjacentHTML('beforeend', chunkHtml); } 
@@ -276,7 +284,7 @@
                 currentMode = mode; currentIndex = index;
                 saveSetting('quran_last_mode', mode); saveSetting('quran_last_index', index);
                 
-                setTimeout(calculateSmartProgress, 300); // تحديث العداد بعد وضع الكتلة
+                setTimeout(calculateSmartProgress, 300); 
                 
             } catch (error) { document.getElementById('loading').innerHTML = '<span style="color:red">حدث خطأ في الاتصال، يرجى المحاولة.</span>'; } 
             finally { isFetching = false; if(document.getElementById('loading').innerHTML !== 'تم ختم القرآن الكريم 🌙') document.getElementById('loading').style.display = 'none'; }
