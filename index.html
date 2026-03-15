@@ -41,17 +41,19 @@
         body.layout-tablet .container { max-width: 850px !important; padding: 15px !important; }
         body.layout-desktop .container { max-width: 1200px !important; padding: 20px !important; }
 
+        /* 👑 الشريط العلوي الجديد (البوصلة الذكية) 👑 */
         .top-bar {
-            position: fixed; top: 0; left: 0; right: 0; background: var(--box); padding: 8px 5px;
-            text-align: center; border-bottom: 2px solid var(--gold); z-index: 1000; display: flex; justify-content: center; align-items: center; gap: 6px;
+            position: fixed; top: 0; left: 0; right: 0; background: var(--box); padding: 8px 15px;
+            text-align: center; border-bottom: 2px solid var(--gold); z-index: 1000; 
+            display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3); transition: transform 0.5s ease;
         }
+        .icon-btn { background: transparent; color: var(--gold); border: none; font-size: 22px; cursor: pointer; outline: none; transition: transform 0.2s; }
+        .icon-btn:active { transform: scale(0.9); }
+        .live-location { flex-grow: 1; text-align: center; color: var(--gold); font-weight: bold; font-size: 15px; letter-spacing: -0.5px; font-family: Arial, sans-serif; }
 
         .progress-container { position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: rgba(0,0,0,0.1); }
         .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease, background-color 0.5s ease; }
-
-        .top-bar select { background: var(--bg); color: var(--txt); border: 1px solid var(--gold); padding: 5px; border-radius: 6px; font-size: 13px; font-weight: bold; width: 40%; max-width: 300px; outline: none; font-family: 'Arial', sans-serif; transition: color 0.3s; }
-        .fs-btn { background: var(--gold); color: var(--bg); border: none; padding: 5px 10px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; outline: none; }
 
         .combined-header {
             display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px;
@@ -69,8 +71,17 @@
         .ayah-num::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--gold); -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; z-index: -1; }
 
         .mini-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--box); padding: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 2px solid var(--gold); z-index: 9999; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); transition: transform 0.5s ease; }
-        .settings-panel { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--bg); border: 2px solid var(--gold); border-radius: 12px; padding: 15px; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.5); z-index: 9998; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
-        .settings-panel.active { opacity: 1; pointer-events: auto; transform: translateX(-50%) scale(1); }
+        
+        /* نوافذ منبثقة موحدة (للفهرس والإعدادات) */
+        .popup-panel {
+            position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) scale(0.9);
+            background: var(--bg); border: 2px solid var(--gold); border-radius: 12px;
+            padding: 15px; width: 90%; max-width: 400px;
+            display: flex; flex-direction: column; gap: 10px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5); z-index: 9998;
+            opacity: 0; pointer-events: none; transition: all 0.3s ease;
+        }
+        .popup-panel.active { opacity: 1; pointer-events: auto; transform: translateX(-50%) scale(1); }
         .settings-row { display: flex; justify-content: space-between; gap: 10px; }
         .btn, .setting-select { background: var(--box); color: var(--txt); border: 1px solid var(--gold); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; outline: none; font-family: 'Arial', sans-serif; flex: 1; text-align: center; }
         .play { background: var(--gold); color: var(--bg); font-size: 14px; padding: 6px 20px; }
@@ -88,19 +99,13 @@
         .indicator-hl { color: var(--gold); font-size: 14px; transition: color 0.5s ease;}
         body.reading-mode .page-indicator { bottom: 15px; opacity: 0.5; }
 
-        @keyframes gentlePulse {
-            0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); border-color: var(--gold); }
-            100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-        }
+        @keyframes gentlePulse { 0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); border-color: var(--gold); } 100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.4); } }
         .pulse-active { animation: gentlePulse 2s infinite; border-color: var(--gold) !important; }
         .success-text { color: #22C55E !important; }
 
         .toast {
-            position: fixed; top: -60px; left: 50%; transform: translateX(-50%);
-            background: var(--gold); color: var(--bg); padding: 10px 20px; border-radius: 20px;
-            font-weight: bold; font-size: 14px; z-index: 10001; transition: top 0.5s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center;
+            position: fixed; top: -60px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--bg); padding: 10px 20px; border-radius: 20px;
+            font-weight: bold; font-size: 14px; z-index: 10001; transition: top 0.5s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center;
         }
         .toast.show { top: 70px; }
 
@@ -111,20 +116,26 @@
 <body class="layout-auto">
 
     <div class="top-bar" id="topBar">
-        <select id="juzIndex" onchange="loadData('juz', this.value)"></select>
-        <select id="suraIndex" onchange="loadData('surah', this.value)"></select>
-        <button class="fs-btn" id="fsBtn" onclick="toggleFullScreen()" title="ملء الشاشة">⛶</button>
+        <button class="icon-btn" onclick="toggleFullScreen()" title="ملء الشاشة">⛶</button>
+        <div class="live-location" id="liveLocation">جاري التحميل...</div>
+        <button class="icon-btn" onclick="toggleIndex(event)" title="الفهرس">📖</button>
         <div class="progress-container"><div class="progress-bar" id="topProgressBar"></div></div>
     </div>
 
     <div id="celebrationToast" class="toast">✨ ما شاء الله! بدأت الآن في الجزء الجديد</div>
 
     <div id="pageIndicator" class="page-indicator">
-        <span class="indicator-hl" id="indTitle">جاري الحساب...</span>
+        <span class="indicator-hl" id="indTitle">...</span>
         <span id="indDetails"></span>
     </div>
 
-    <div class="settings-panel" id="settingsPanel">
+    <div class="popup-panel" id="indexPanel">
+        <div style="text-align:center; color:var(--gold); font-weight:bold; margin-bottom:5px;">📖 فهرس القرآن الكريم</div>
+        <select class="setting-select" id="juzIndex" onchange="loadData('juz', this.value); toggleIndex();" style="width:100%; margin-bottom:10px;"></select>
+        <select class="setting-select" id="suraIndex" onchange="loadData('surah', this.value); toggleIndex();" style="width:100%;"></select>
+    </div>
+
+    <div class="popup-panel" id="settingsPanel">
         <div style="text-align:center; color:var(--gold); font-weight:bold; margin-bottom:5px;">⚙️ إعدادات المصحف</div>
         <div class="settings-row">
             <select class="setting-select" id="layoutSelect" onchange="changeLayout(this.value)"><option value="auto">📐 تلقائي</option><option value="phone">📱 جوال</option><option value="tablet">💊 تابلت</option><option value="desktop">🖥️ شاشة كاملة</option></select>
@@ -170,41 +181,73 @@
             let savedFont = localStorage.getItem('quran_font'); if(savedFont) { document.documentElement.style.setProperty('--font-family', savedFont); document.getElementById('fontSelect').value = savedFont; }
             let savedLayout = localStorage.getItem('quran_layout'); if(savedLayout) { document.body.className = 'layout-' + savedLayout; document.getElementById('layoutSelect').value = savedLayout; }
 
-            const juzSelect = document.getElementById('juzIndex'); juzSelect.innerHTML = '<option value="" disabled selected>📜 الفهرس (جزء)</option>'; for(let i=1; i<=30; i++) juzSelect.innerHTML += `<option value="${i}">الجزء ${i}</option>`;
+            const juzSelect = document.getElementById('juzIndex'); juzSelect.innerHTML = '<option value="" disabled selected>📜 الانتقال السريع لجزء معين...</option>'; for(let i=1; i<=30; i++) juzSelect.innerHTML += `<option value="${i}">الجزء ${i}</option>`;
             const suraNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-            const suraSelect = document.getElementById('suraIndex'); suraSelect.innerHTML = '<option value="" disabled selected>📖 الفهرس (سورة)</option>'; suraNames.forEach((name, i) => suraSelect.innerHTML += `<option value="${i+1}">${i+1}. ${name}</option>`);
+            const suraSelect = document.getElementById('suraIndex'); suraSelect.innerHTML = '<option value="" disabled selected>📖 الانتقال السريع لسورة معينة...</option>'; suraNames.forEach((name, i) => suraSelect.innerHTML += `<option value="${i+1}">${i+1}. ${name}</option>`);
 
             let savedMode = localStorage.getItem('quran_last_mode') || 'surah';
             let savedIndex = localStorage.getItem('quran_last_index') || 1;
-            if(savedMode === 'juz') document.getElementById('juzIndex').value = savedIndex; else document.getElementById('suraIndex').value = savedIndex;
             loadData(savedMode, savedIndex);
         });
 
-        function toggleSettings(e) { e.stopPropagation(); document.getElementById('settingsPanel').classList.toggle('active'); }
-        document.addEventListener('click', (e) => { const panel = document.getElementById('settingsPanel'); if (panel.classList.contains('active') && !panel.contains(e.target)) { panel.classList.remove('active'); } });
+        // 🌟 التحكم في النوافذ المنبثقة بشكل أنيق
+        function toggleSettings(e) { 
+            if(e) e.stopPropagation(); 
+            document.getElementById('indexPanel').classList.remove('active');
+            document.getElementById('settingsPanel').classList.toggle('active'); 
+        }
+        function toggleIndex(e) {
+            if(e) e.stopPropagation(); 
+            document.getElementById('settingsPanel').classList.remove('active');
+            document.getElementById('indexPanel').classList.toggle('active');
+        }
+        document.addEventListener('click', (e) => { 
+            const sPanel = document.getElementById('settingsPanel');
+            const iPanel = document.getElementById('indexPanel');
+            if (sPanel.classList.contains('active') && !sPanel.contains(e.target)) sPanel.classList.remove('active'); 
+            if (iPanel.classList.contains('active') && !iPanel.contains(e.target)) iPanel.classList.remove('active'); 
+        });
 
         const toAr = (n) => n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
         
         function calculateSmartProgress() {
             const chunks = document.querySelectorAll('.quran-chunk');
             let activeChunk = null; let activeRect = null;
+            
+            // 📍 استشعار وتحديد الكتلة (الجزء/السورة) التي تظهر على الشاشة الآن
             chunks.forEach(chunk => {
                 const rect = chunk.getBoundingClientRect();
                 if (rect.top <= window.innerHeight * 0.6 && rect.bottom >= window.innerHeight * 0.4) { activeChunk = chunk; activeRect = rect; }
             });
 
             if (activeChunk && activeRect) {
+                // 📍 استشعار وتحديد اسم "السورة" الحالية داخل هذه الكتلة
+                const anchors = activeChunk.querySelectorAll('.scroll-anchor');
+                let currentSura = ""; let currentJuz = "";
+                anchors.forEach(a => {
+                    const aRect = a.getBoundingClientRect();
+                    // إذا كانت بداية السورة قد عبرت ثلث الشاشة العلوي، فهي السورة الحالية
+                    if (aRect.top <= window.innerHeight * 0.4) { 
+                        currentSura = a.getAttribute('data-sura');
+                        currentJuz = a.getAttribute('data-juz');
+                    }
+                });
+                
+                // إذا لم نجد (في أول صفحة)، نأخذ أول رابط موجود
+                if(!currentSura && anchors.length > 0) {
+                     currentSura = anchors[0].getAttribute('data-sura');
+                     currentJuz = anchors[0].getAttribute('data-juz');
+                }
+
+                // تحديث البوصلة العلوية فوراً
+                if(currentSura) {
+                    document.getElementById('liveLocation').innerText = `سورة ${currentSura} • الجزء ${toAr(currentJuz)}`;
+                }
+
+                // تحديث العداد السفلي والإنجاز
                 const modeName = activeChunk.getAttribute('data-mode') === 'juz' ? 'الجزء' : 'السورة';
                 const itemIndex = parseInt(activeChunk.getAttribute('data-index'));
                 
-                if (activeChunk.getAttribute('data-mode') === 'juz') {
-                    document.getElementById('juzIndex').value = itemIndex;
-                    document.getElementById('suraIndex').value = "";
-                } else {
-                    document.getElementById('suraIndex').value = itemIndex;
-                    document.getElementById('juzIndex').value = "";
-                }
-
                 if (activeChunkIndex !== null && itemIndex > activeChunkIndex) {
                     const toast = document.getElementById('celebrationToast');
                     toast.innerText = `✨ ما شاء الله! بدأت الآن في ${modeName} ${toAr(itemIndex)}`;
@@ -277,9 +320,15 @@
                 const response = await fetch(`https://api.alquran.cloud/v1/${mode}/${index}/quran-uthmani`);
                 const data = await response.json();
                 
-                let innerHtml = ''; 
+                let innerHtml = ''; let lastJuzRendered = 0;
 
                 data.data.ayahs.forEach((ayah) => {
+                    // 📍 زرع مثبتات مخفية للبوصلة العلوية عند كل تغيير للسورة أو الجزء
+                    if (ayah.surah.name !== lastSuraRendered || ayah.juz !== lastJuzRendered) {
+                        innerHtml += `<span class="scroll-anchor" data-sura="${ayah.surah.name}" data-juz="${ayah.juz}"></span>`;
+                    }
+                    lastJuzRendered = ayah.juz;
+
                     if (ayah.surah.name !== lastSuraRendered) {
                         lastSuraRendered = ayah.surah.name;
                         
@@ -292,8 +341,6 @@
                     }
                     
                     let text = ayah.text;
-                    
-                    // ✂️ مسح دقيق ومباشر لجميع احتمالات البسملة المخفية
                     if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
                         text = text.replace("بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ", "")
                                    .replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "")
@@ -328,7 +375,7 @@
         function toggleScroll(e) {
             if(e) e.stopPropagation(); 
             const btn = document.getElementById('pBtn'); const topBar = document.getElementById('topBar'); const bottomBar = document.getElementById('bottomBar');
-            document.getElementById('settingsPanel').classList.remove('active'); 
+            document.getElementById('settingsPanel').classList.remove('active'); document.getElementById('indexPanel').classList.remove('active');
 
             if (isS) { 
                 clearInterval(sInt); isS = false; 
