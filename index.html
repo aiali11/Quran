@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مصحف التهجد - الشامل</title>
+    <title>مصحف التهجد - الذكي</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;700&family=El+Messiri:wght@400;700&family=Lateef:wght@400;700&family=Markazi+Text:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Reem+Kufi:wght@400;700&family=Scheherazade+New:wght@400;700&family=Tajawal:wght@400;700&family=Changa:wght@400;700&family=Almarai:wght@400;700&family=Mada:wght@400;700&family=Readex+Pro:wght@400;700&family=Kufam:wght@400;700&family=Zain:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Lateef:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
+        /* الرسم العثماني الأصلي (مجمع الملك فهد) */
         @font-face { font-family: 'Uthmanic'; src: url('https://cdn.jsdelivr.net/gh/mushaf-ar/quran-web@master/fonts/UthmanicHafs1Ver09.woff2') format('woff2'); font-display: swap; }
 
         :root, [data-theme="paper"] {
             --bg: #F9F4E8; --txt: #1A120B; --gold: #8B1E13; --box: #EFE6D5; --frame-out: #5C1A11; --mark-color: #8B1E13;
             --paper-texture: linear-gradient(to right, #F9F4E8, #F1E8D0, #F9F4E8); 
-            --font-family: 'Amiri Quran', serif; --font-size: 16px; --font-weight: 400;
+            --font-family: 'Uthmanic', serif; --font-size: 16px; --font-weight: 400;
         }
         [data-theme="dark"] { --bg: #101010; --txt: #E2E2D5; --gold: #C5A059; --box: #1A1A1A; --frame-out: #4A0E13; --paper-texture: none; }
         [data-theme="medium"] { --bg: #2B1E16; --txt: #E6D5B8; --gold: #D48C5B; --box: #38281F; --frame-out: #1E120D; --paper-texture: none; }
@@ -55,8 +56,6 @@
         .progress-container { position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: rgba(0,0,0,0.1); }
         .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease, background-color 0.5s ease; }
 
-        .fs-btn { background: var(--gold); color: var(--bg); border: none; padding: 5px 10px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; outline: none; }
-
         .combined-header {
             display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px;
             border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold);
@@ -68,7 +67,6 @@
         .sura-name::before, .sura-name::after { content: ' ۞ '; font-size: 70%; }
         .basmalah-inline { color: var(--txt); font-size: var(--font-size); font-weight: normal; }
 
-        /* دعم الوزن الديناميكي للخط (مهم جداً للخطوط العريضة) */
         .quran-text { 
             font-size: var(--font-size); font-weight: var(--font-weight); 
             letter-spacing: -0.5px; word-spacing: -1.2px; transition: font-size 0.3s; 
@@ -150,21 +148,11 @@
             <select class="setting-select" id="colorSelect" onchange="changeColor(this.value)"><option value="#C5A059">✨ ذهبي</option><option value="#8B1E13">🔴 عنابي</option><option value="#16A34A">💚 أخضر</option><option value="#3B82F6">💙 أزرق</option></select>
             
             <select class="setting-select" id="fontSelect" onchange="changeFont(this)">
-                <option value="'Amiri Quran', serif" data-weight="400">✍️ أميري قرآن</option>
-                <option value="'Uthmanic', serif" data-weight="400">✍️ عثمان طه</option>
-                <option value="'Almarai', sans-serif" data-weight="700">✍️ المراعي (عريض وواضح)</option>
-                <option value="'Scheherazade New', serif" data-weight="700">✍️ شهرزاد (عريض)</option>
-                <option value="'Lateef', serif" data-weight="700">✍️ لطيف (عريض)</option>
-                <option value="'Noto Naskh Arabic', serif" data-weight="700">✍️ نسخ (عريض)</option>
-                <option value="'Mada', sans-serif" data-weight="700">✍️ مدى (عريض للشاشات)</option>
-                <option value="'Changa', sans-serif" data-weight="400">✍️ شانجا (مربع مقروء)</option>
-                <option value="'El Messiri', sans-serif" data-weight="700">✍️ المسيري (عريض)</option>
-                <option value="'Zain', sans-serif" data-weight="700">✍️ زين (عريض حديث)</option>
-                <option value="'Readex Pro', sans-serif" data-weight="400">✍️ ريدكس برو</option>
-                <option value="'Markazi Text', serif" data-weight="700">✍️ مركزي (عريض)</option>
-                <option value="'Tajawal', sans-serif" data-weight="400">✍️ تجوال</option>
-                <option value="'Cairo', sans-serif" data-weight="700">✍️ القاهرة (عريض)</option>
-                <option value="'Kufam', sans-serif" data-weight="700">✍️ كوفام (عريض)</option>
+                <option value="'Uthmanic', serif" data-weight="400">✍️ الرسم العثماني (الافتراضي)</option>
+                <option value="'Noto Naskh Arabic', serif" data-weight="700">✍️ نسخ جوجل (عريض وواضح جداً)</option>
+                <option value="'Scheherazade New', serif" data-weight="700">✍️ شهرزاد (عريض ومريح)</option>
+                <option value="'Amiri Quran', serif" data-weight="400">✍️ أميري قرآن (كلاسيكي)</option>
+                <option value="'Lateef', serif" data-weight="700">✍️ لطيف (عريض وكبير)</option>
             </select>
         </div>
         <div class="settings-row" style="justify-content:center; align-items:center; background:var(--bg); border:1px solid var(--gold); border-radius:6px; padding:5px;">
@@ -200,8 +188,22 @@
             let savedSize = localStorage.getItem('quran_size'); if(savedSize) { currentFontSize = parseInt(savedSize); document.documentElement.style.setProperty('--font-size', currentFontSize + 'px'); document.getElementById('sizeDisplay').innerText = currentFontSize; }
             let savedTheme = localStorage.getItem('quran_theme'); if(savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeSelect').value = savedTheme; }
             let savedColor = localStorage.getItem('quran_color'); if(savedColor) { document.documentElement.style.setProperty('--mark-color', savedColor); document.getElementById('colorSelect').value = savedColor; }
-            let savedFont = localStorage.getItem('quran_font'); if(savedFont) { document.documentElement.style.setProperty('--font-family', savedFont); document.getElementById('fontSelect').value = savedFont; }
-            let savedWeight = localStorage.getItem('quran_weight'); if(savedWeight) { document.documentElement.style.setProperty('--font-weight', savedWeight); }
+            
+            // استرجاع الخط بذكاء، وإذا كان خطاً قديماً تم حذفه، نرجعه للعثماني
+            let savedFont = localStorage.getItem('quran_font'); 
+            let savedWeight = localStorage.getItem('quran_weight') || '400';
+            const validFonts = ["'Uthmanic', serif", "'Noto Naskh Arabic', serif", "'Scheherazade New', serif", "'Amiri Quran', serif", "'Lateef', serif"];
+            
+            if(savedFont && validFonts.includes(savedFont)) { 
+                document.documentElement.style.setProperty('--font-family', savedFont); 
+                document.documentElement.style.setProperty('--font-weight', savedWeight); 
+                document.getElementById('fontSelect').value = savedFont; 
+            } else {
+                document.documentElement.style.setProperty('--font-family', "'Uthmanic', serif");
+                document.documentElement.style.setProperty('--font-weight', '400');
+                document.getElementById('fontSelect').value = "'Uthmanic', serif";
+            }
+
             let savedLayout = localStorage.getItem('quran_layout'); if(savedLayout) { document.body.className = 'layout-' + savedLayout; document.getElementById('layoutSelect').value = savedLayout; }
 
             const juzSelect = document.getElementById('juzIndex'); juzSelect.innerHTML = '<option value="" disabled selected>📜 الانتقال لجزء معين...</option>'; for(let i=1; i<=30; i++) juzSelect.innerHTML += `<option value="${i}">الجزء ${i}</option>`;
@@ -211,22 +213,19 @@
             let savedMode = localStorage.getItem('quran_last_mode') || 'surah';
             let savedIndex = localStorage.getItem('quran_last_index') || 1;
             
-            // تهيئة الفهارس بحذر دون التسبب بتبادل
             if(savedMode === 'juz') document.getElementById('juzIndex').value = savedIndex; 
             else document.getElementById('suraIndex').value = savedIndex;
             
             loadData(savedMode, savedIndex);
         });
 
-        // 🌟 الدالة الذكية لمنع تضارب الفهارس 🌟
         function jumpTo(mode, index) {
             if (!index) return;
-            // إذا اخترت جزء، يتم "تصفير" قائمة السور، والعكس صحيح.
             if (mode === 'juz') document.getElementById('suraIndex').selectedIndex = 0;
             else document.getElementById('juzIndex').selectedIndex = 0;
             
             loadData(mode, index);
-            toggleIndex(); // إغلاق نافذة الفهرس تلقائياً بعد الاختيار لراحة المستخدم
+            toggleIndex(); 
         }
 
         function toggleSettings(e) { 
@@ -312,7 +311,6 @@
         function changeColor(val) { document.documentElement.style.setProperty('--mark-color', val); saveSetting('quran_color', val); }
         function changeLayout(val) { document.body.className = 'layout-' + val; saveSetting('quran_layout', val); setTimeout(calculateSmartProgress, 200); }
         
-        // 🌟 الدالة المطورة لحفظ الخط مع الوزن (السماكة) 🌟
         function changeFont(selectObj) { 
             const val = selectObj.value;
             const weight = selectObj.options[selectObj.selectedIndex].getAttribute('data-weight') || '400';
