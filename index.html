@@ -77,7 +77,6 @@
         .size-btn { font-size: 16px; padding: 2px 15px; flex: none; }
         .size-display { font-size: 16px; font-weight: bold; color: var(--gold); min-width: 30px; text-align: center; }
 
-        /* 👑 العداد التحفيزي الجديد 👑 */
         .page-indicator {
             position: fixed; bottom: 70px; left: 15px; background: var(--box); color: var(--txt);
             padding: 6px 15px; border: 1px solid var(--gold); border-radius: 20px;
@@ -89,7 +88,6 @@
         .indicator-hl { color: var(--gold); font-size: 14px; transition: color 0.5s ease;}
         body.reading-mode .page-indicator { bottom: 15px; opacity: 0.5; }
 
-        /* أنيميشن نبض النهاية (التحفيز الأقوى) */
         @keyframes gentlePulse {
             0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
             50% { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); border-color: var(--gold); }
@@ -178,11 +176,7 @@
 
             let savedMode = localStorage.getItem('quran_last_mode') || 'surah';
             let savedIndex = localStorage.getItem('quran_last_index') || 1;
-            
-            // تهيئة القوائم المبدئية
-            if(savedMode === 'juz') document.getElementById('juzIndex').value = savedIndex; 
-            else document.getElementById('suraIndex').value = savedIndex;
-            
+            if(savedMode === 'juz') document.getElementById('juzIndex').value = savedIndex; else document.getElementById('suraIndex').value = savedIndex;
             loadData(savedMode, savedIndex);
         });
 
@@ -196,7 +190,6 @@
             let activeChunk = null; let activeRect = null;
             chunks.forEach(chunk => {
                 const rect = chunk.getBoundingClientRect();
-                // تحديد الكتلة المرئية بنسبة كبيرة في الشاشة
                 if (rect.top <= window.innerHeight * 0.6 && rect.bottom >= window.innerHeight * 0.4) { activeChunk = chunk; activeRect = rect; }
             });
 
@@ -204,7 +197,6 @@
                 const modeName = activeChunk.getAttribute('data-mode') === 'juz' ? 'الجزء' : 'السورة';
                 const itemIndex = parseInt(activeChunk.getAttribute('data-index'));
                 
-                // 🌟 الميزة الأولى: تحديث الفهرس العلوي تلقائياً (Live Sync)
                 if (activeChunk.getAttribute('data-mode') === 'juz') {
                     document.getElementById('juzIndex').value = itemIndex;
                     document.getElementById('suraIndex').value = "";
@@ -226,35 +218,23 @@
                 let totalPages = Math.ceil(activeRect.height / h);
                 let remaining = Math.max(0, totalPages - currentPage);
                 
-                // 🌟 الميزة الثانية: النسبة المئوية الدقيقة
                 let percent = Math.min(100, Math.max(0, ((scrolledInside + h) / activeRect.height) * 100));
                 let percentInt = Math.floor(percent);
 
-                // 🌟 الميزة الثالثة: تدرج لون الإنجاز في الشريط العلوي
                 const topProgressBar = document.getElementById('topProgressBar');
                 topProgressBar.style.width = percent + '%';
-                if(percent > 85) {
-                    topProgressBar.style.backgroundColor = '#22C55E'; // يتحول للأخضر المريح
-                } else {
-                    topProgressBar.style.backgroundColor = 'var(--gold)'; // يبقى ذهبي
-                }
+                if(percent > 85) { topProgressBar.style.backgroundColor = '#22C55E'; } else { topProgressBar.style.backgroundColor = 'var(--gold)'; }
 
                 document.getElementById('indTitle').innerText = `${modeName} ${toAr(itemIndex)}`;
                 
-                // 🌟 الميزة الرابعة: نبض النهاية للمؤشر العائم
                 const indicator = document.getElementById('pageIndicator');
                 const titleSpan = document.getElementById('indTitle');
                 if(remaining > 0) { 
                     document.getElementById('indDetails').innerHTML = `• متبقي ${toAr(remaining)} صفحات <span style="color:var(--gold); font-size:11px;">(${toAr(percentInt)}%)</span>`; 
-                    indicator.classList.remove('pulse-active');
-                    titleSpan.classList.remove('success-text');
+                    indicator.classList.remove('pulse-active'); titleSpan.classList.remove('success-text');
                 } else { 
                     document.getElementById('indDetails').innerHTML = `• أوشكت على الختم! 👏 <span style="color:#22C55E; font-size:11px;">(١٠٠%)</span>`; 
-                    // تفعيل النبض التحفيزي
-                    if(totalPages > 1) {
-                        indicator.classList.add('pulse-active');
-                        titleSpan.classList.add('success-text');
-                    }
+                    if(totalPages > 1) { indicator.classList.add('pulse-active'); titleSpan.classList.add('success-text'); }
                 }
             }
         }
@@ -313,8 +293,13 @@
                     
                     let text = ayah.text;
                     
+                    // ✂️ مسح دقيق ومباشر لجميع احتمالات البسملة المخفية
                     if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
-                        text = text.replace(/^بِسۡمِ.*?ٱلرَّحِيمِ\s*/g, '');
+                        text = text.replace("بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ", "")
+                                   .replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "")
+                                   .replace("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", "")
+                                   .replace(/بِسۡمِ.*?ٱلرَّحِيمِ\s*/, "")
+                                   .trim();
                     }
 
                     innerHtml += `<span class="quran-text">${applyColors(text)}</span><span class="ayah-num">${toAr(ayah.numberInSurah)}</span> `;
@@ -328,7 +313,6 @@
                 currentMode = mode; currentIndex = index;
                 saveSetting('quran_last_mode', mode); saveSetting('quran_last_index', index);
                 
-                // تحديث سريع للـ GPS والعداد
                 setTimeout(calculateSmartProgress, 300); 
                 
             } catch (error) { document.getElementById('loading').innerHTML = '<span style="color:red">حدث خطأ في الاتصال، يرجى المحاولة.</span>'; } 
