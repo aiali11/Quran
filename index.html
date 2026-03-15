@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Lateef:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* الرسم العثماني الأصلي (مجمع الملك فهد) */
         @font-face { font-family: 'Uthmanic'; src: url('https://cdn.jsdelivr.net/gh/mushaf-ar/quran-web@master/fonts/UthmanicHafs1Ver09.woff2') format('woff2'); font-display: swap; }
 
         :root, [data-theme="paper"] {
@@ -20,11 +19,16 @@
         [data-theme="medium"] { --bg: #2B1E16; --txt: #E6D5B8; --gold: #D48C5B; --box: #38281F; --frame-out: #1E120D; --paper-texture: none; }
         [data-theme="light"] { --bg: #F0F2F5; --txt: #1C1E21; --gold: #228B22; --box: #E4E6EB; --frame-out: #2E4053; --paper-texture: none; }
 
+        /* تفعيل التمرير الانسيابي السريع عند تقليب الصفحات */
+        html { scroll-behavior: smooth; }
+
         body {
             margin: 0; padding: 0; padding-top: 55px; padding-bottom: 80px; 
             background-color: var(--box); color: var(--txt);
             font-family: var(--font-family); text-align: justify; line-height: 1.5;
             transition: background-color 0.4s, color 0.4s; overflow-x: hidden;
+            /* منع تحديد النص لتسهيل اللمس السريع */
+            user-select: none; -webkit-user-select: none;
         }
 
         .m, .allah { color: var(--mark-color) !important; font-weight: bold; transition: color 0.3s ease; }
@@ -47,7 +51,7 @@
             position: fixed; top: 0; left: 0; right: 0; background: var(--box); padding: 8px 15px;
             text-align: center; border-bottom: 2px solid var(--gold); z-index: 1000; 
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3); transition: transform 0.5s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3); transition: transform 0.4s ease;
         }
         .icon-btn { background: transparent; color: var(--gold); border: none; font-size: 22px; cursor: pointer; outline: none; transition: transform 0.2s; }
         .icon-btn:active { transform: scale(0.9); }
@@ -75,7 +79,7 @@
         .ayah-num { position: relative; display: inline-flex; align-items: center; justify-content: center; width: calc(var(--font-size) * 1.8); height: calc(var(--font-size) * 1.8); font-size: calc(var(--font-size) * 0.8); font-family: Arial, sans-serif; font-weight: bold; color: var(--txt); margin: 0 4px; vertical-align: middle; z-index: 1; }
         .ayah-num::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--gold); -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; z-index: -1; }
 
-        .mini-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--box); padding: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 2px solid var(--gold); z-index: 9999; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); transition: transform 0.5s ease; }
+        .mini-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--box); padding: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 2px solid var(--gold); z-index: 9999; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); transition: transform 0.4s ease; }
         
         .popup-panel {
             position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) scale(0.9);
@@ -146,10 +150,9 @@
         </div>
         <div class="settings-row">
             <select class="setting-select" id="colorSelect" onchange="changeColor(this.value)"><option value="#C5A059">✨ ذهبي</option><option value="#8B1E13">🔴 عنابي</option><option value="#16A34A">💚 أخضر</option><option value="#3B82F6">💙 أزرق</option></select>
-            
             <select class="setting-select" id="fontSelect" onchange="changeFont(this)">
                 <option value="'Uthmanic', serif" data-weight="400">✍️ الرسم العثماني (الافتراضي)</option>
-                <option value="'Noto Naskh Arabic', serif" data-weight="700">✍️ نسخ جوجل (عريض وواضح جداً)</option>
+                <option value="'Noto Naskh Arabic', serif" data-weight="700">✍️ نسخ جوجل (عريض)</option>
                 <option value="'Scheherazade New', serif" data-weight="700">✍️ شهرزاد (عريض ومريح)</option>
                 <option value="'Amiri Quran', serif" data-weight="400">✍️ أميري قرآن (كلاسيكي)</option>
                 <option value="'Lateef', serif" data-weight="700">✍️ لطيف (عريض وكبير)</option>
@@ -174,7 +177,7 @@
     <div class="mini-bar" id="bottomBar">
         <button class="btn" id="settingsBtn" onclick="toggleSettings(event)">⚙️ الإعدادات</button>
         <button class="btn" onclick="changeSpeed(-0.2)">أبطأ 🐢</button>
-        <button class="btn play" id="pBtn" onclick="toggleScroll(event)">تشغيل ⏵</button>
+        <button class="btn play" id="pBtn" onclick="toggleAutoScroll(event)">تلقائي ⏵</button>
         <button class="btn" onclick="changeSpeed(0.2)">أسرع 🐇</button>
     </div>
 
@@ -189,20 +192,11 @@
             let savedTheme = localStorage.getItem('quran_theme'); if(savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeSelect').value = savedTheme; }
             let savedColor = localStorage.getItem('quran_color'); if(savedColor) { document.documentElement.style.setProperty('--mark-color', savedColor); document.getElementById('colorSelect').value = savedColor; }
             
-            // استرجاع الخط بذكاء، وإذا كان خطاً قديماً تم حذفه، نرجعه للعثماني
             let savedFont = localStorage.getItem('quran_font'); 
             let savedWeight = localStorage.getItem('quran_weight') || '400';
             const validFonts = ["'Uthmanic', serif", "'Noto Naskh Arabic', serif", "'Scheherazade New', serif", "'Amiri Quran', serif", "'Lateef', serif"];
-            
-            if(savedFont && validFonts.includes(savedFont)) { 
-                document.documentElement.style.setProperty('--font-family', savedFont); 
-                document.documentElement.style.setProperty('--font-weight', savedWeight); 
-                document.getElementById('fontSelect').value = savedFont; 
-            } else {
-                document.documentElement.style.setProperty('--font-family', "'Uthmanic', serif");
-                document.documentElement.style.setProperty('--font-weight', '400');
-                document.getElementById('fontSelect').value = "'Uthmanic', serif";
-            }
+            if(savedFont && validFonts.includes(savedFont)) { document.documentElement.style.setProperty('--font-family', savedFont); document.documentElement.style.setProperty('--font-weight', savedWeight); document.getElementById('fontSelect').value = savedFont; } 
+            else { document.documentElement.style.setProperty('--font-family', "'Uthmanic', serif"); document.documentElement.style.setProperty('--font-weight', '400'); document.getElementById('fontSelect').value = "'Uthmanic', serif"; }
 
             let savedLayout = localStorage.getItem('quran_layout'); if(savedLayout) { document.body.className = 'layout-' + savedLayout; document.getElementById('layoutSelect').value = savedLayout; }
 
@@ -212,9 +206,7 @@
 
             let savedMode = localStorage.getItem('quran_last_mode') || 'surah';
             let savedIndex = localStorage.getItem('quran_last_index') || 1;
-            
-            if(savedMode === 'juz') document.getElementById('juzIndex').value = savedIndex; 
-            else document.getElementById('suraIndex').value = savedIndex;
+            if(savedMode === 'juz') document.getElementById('juzIndex').value = savedIndex; else document.getElementById('suraIndex').value = savedIndex;
             
             loadData(savedMode, savedIndex);
         });
@@ -223,21 +215,11 @@
             if (!index) return;
             if (mode === 'juz') document.getElementById('suraIndex').selectedIndex = 0;
             else document.getElementById('juzIndex').selectedIndex = 0;
-            
-            loadData(mode, index);
-            toggleIndex(); 
+            loadData(mode, index); toggleIndex(); 
         }
 
-        function toggleSettings(e) { 
-            if(e) e.stopPropagation(); 
-            document.getElementById('indexPanel').classList.remove('active');
-            document.getElementById('settingsPanel').classList.toggle('active'); 
-        }
-        function toggleIndex(e) {
-            if(e) e.stopPropagation(); 
-            document.getElementById('settingsPanel').classList.remove('active');
-            document.getElementById('indexPanel').classList.toggle('active');
-        }
+        function toggleSettings(e) { if(e) e.stopPropagation(); document.getElementById('indexPanel').classList.remove('active'); document.getElementById('settingsPanel').classList.toggle('active'); }
+        function toggleIndex(e) { if(e) e.stopPropagation(); document.getElementById('settingsPanel').classList.remove('active'); document.getElementById('indexPanel').classList.toggle('active'); }
         document.addEventListener('click', (e) => { 
             const sPanel = document.getElementById('settingsPanel'); const iPanel = document.getElementById('indexPanel');
             if (sPanel.classList.contains('active') && !sPanel.contains(e.target)) sPanel.classList.remove('active'); 
@@ -249,7 +231,6 @@
         function calculateSmartProgress() {
             const chunks = document.querySelectorAll('.quran-chunk');
             let activeChunk = null; let activeRect = null;
-            
             chunks.forEach(chunk => {
                 const rect = chunk.getBoundingClientRect();
                 if (rect.top <= window.innerHeight * 0.6 && rect.bottom >= window.innerHeight * 0.4) { activeChunk = chunk; activeRect = rect; }
@@ -263,10 +244,7 @@
                     if (aRect.top <= window.innerHeight * 0.4) { currentSura = a.getAttribute('data-sura'); currentJuz = a.getAttribute('data-juz'); }
                 });
                 
-                if(!currentSura && anchors.length > 0) {
-                     currentSura = anchors[0].getAttribute('data-sura'); currentJuz = anchors[0].getAttribute('data-juz');
-                }
-
+                if(!currentSura && anchors.length > 0) { currentSura = anchors[0].getAttribute('data-sura'); currentJuz = anchors[0].getAttribute('data-juz'); }
                 if(currentSura) { document.getElementById('liveLocation').innerText = `سورة ${currentSura} • الجزء ${toAr(currentJuz)}`; }
 
                 const modeName = activeChunk.getAttribute('data-mode') === 'juz' ? 'الجزء' : 'السورة';
@@ -285,18 +263,15 @@
                 let totalPages = Math.ceil(activeRect.height / h);
                 let remaining = Math.max(0, totalPages - currentPage);
                 let percent = Math.min(100, Math.max(0, ((scrolledInside + h) / activeRect.height) * 100));
-                let percentInt = Math.floor(percent);
 
                 const topProgressBar = document.getElementById('topProgressBar');
                 topProgressBar.style.width = percent + '%';
                 if(percent > 85) { topProgressBar.style.backgroundColor = '#22C55E'; } else { topProgressBar.style.backgroundColor = 'var(--gold)'; }
 
                 document.getElementById('indTitle').innerText = `${modeName} ${toAr(itemIndex)}`;
-                
-                const indicator = document.getElementById('pageIndicator');
-                const titleSpan = document.getElementById('indTitle');
+                const indicator = document.getElementById('pageIndicator'); const titleSpan = document.getElementById('indTitle');
                 if(remaining > 0) { 
-                    document.getElementById('indDetails').innerHTML = `• متبقي ${toAr(remaining)} صفحات <span style="color:var(--gold); font-size:11px;">(${toAr(percentInt)}%)</span>`; 
+                    document.getElementById('indDetails').innerHTML = `• متبقي ${toAr(remaining)} صفحات <span style="color:var(--gold); font-size:11px;">(${toAr(Math.floor(percent))}%)</span>`; 
                     indicator.classList.remove('pulse-active'); titleSpan.classList.remove('success-text');
                 } else { 
                     document.getElementById('indDetails').innerHTML = `• أوشكت على الختم! 👏 <span style="color:#22C55E; font-size:11px;">(١٠٠%)</span>`; 
@@ -312,13 +287,9 @@
         function changeLayout(val) { document.body.className = 'layout-' + val; saveSetting('quran_layout', val); setTimeout(calculateSmartProgress, 200); }
         
         function changeFont(selectObj) { 
-            const val = selectObj.value;
-            const weight = selectObj.options[selectObj.selectedIndex].getAttribute('data-weight') || '400';
-            document.documentElement.style.setProperty('--font-family', val); 
-            document.documentElement.style.setProperty('--font-weight', weight); 
-            saveSetting('quran_font', val); 
-            saveSetting('quran_weight', weight); 
-            setTimeout(calculateSmartProgress, 200); 
+            const val = selectObj.value; const weight = selectObj.options[selectObj.selectedIndex].getAttribute('data-weight') || '400';
+            document.documentElement.style.setProperty('--font-family', val); document.documentElement.style.setProperty('--font-weight', weight); 
+            saveSetting('quran_font', val); saveSetting('quran_weight', weight); setTimeout(calculateSmartProgress, 200); 
         }
 
         function changeFontSize(step) {
@@ -331,7 +302,7 @@
         function toggleFullScreen() {
             const doc = window.document; const docEl = doc.documentElement;
             const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-            const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+            const cancelFullScreen = doc.exitFullscreen || doc.mozFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
             try { if (!doc.fullscreenElement) { requestFullScreen.call(docEl); document.getElementById('fsBtn').innerHTML = '✖'; } else { cancelFullScreen.call(doc); document.getElementById('fsBtn').innerHTML = '⛶'; } } catch(e) {}
         }
 
@@ -363,22 +334,14 @@
 
                     if (ayah.surah.name !== lastSuraRendered) {
                         lastSuraRendered = ayah.surah.name;
-                        
-                        innerHtml += `<div class="combined-header">`;
-                        innerHtml += `<span class="sura-name">${lastSuraRendered}</span>`;
-                        if (ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
-                            innerHtml += `<span class="basmalah-inline">${applyColors("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")}</span>`; 
-                        }
+                        innerHtml += `<div class="combined-header"><span class="sura-name">${lastSuraRendered}</span>`;
+                        if (ayah.surah.number !== 1 && ayah.surah.number !== 9) { innerHtml += `<span class="basmalah-inline">${applyColors("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")}</span>`; }
                         innerHtml += `</div>`;
                     }
                     
                     let text = ayah.text;
                     if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
-                        text = text.replace("بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ", "")
-                                   .replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "")
-                                   .replace("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", "")
-                                   .replace(/بِسۡمِ.*?ٱلرَّحِيمِ\s*/, "")
-                                   .trim();
+                        text = text.replace("بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ", "").replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "").replace("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", "").replace(/بِسۡمِ.*?ٱلرَّحِيمِ\s*/, "").trim();
                     }
 
                     innerHtml += `<span class="quran-text">${applyColors(text)}</span><span class="ayah-num">${toAr(ayah.numberInSurah)}</span> `;
@@ -391,7 +354,6 @@
                 
                 currentMode = mode; currentIndex = index;
                 saveSetting('quran_last_mode', mode); saveSetting('quran_last_index', index);
-                
                 setTimeout(calculateSmartProgress, 300); 
                 
             } catch (error) { document.getElementById('loading').innerHTML = '<span style="color:red">حدث خطأ في الاتصال، يرجى المحاولة.</span>'; } 
@@ -404,25 +366,54 @@
         observer.observe(document.getElementById('sentinel'));
 
         let sInt; let isS = false; let speed = 0.5;
-        function toggleScroll(e) {
+        
+        // 🌟 دالة التشغيل التلقائي المحدثة
+        function toggleAutoScroll(e) {
             if(e) e.stopPropagation(); 
             const btn = document.getElementById('pBtn'); const topBar = document.getElementById('topBar'); const bottomBar = document.getElementById('bottomBar');
             document.getElementById('settingsPanel').classList.remove('active'); document.getElementById('indexPanel').classList.remove('active');
 
             if (isS) { 
                 clearInterval(sInt); isS = false; 
-                btn.innerHTML = 'تشغيل ⏵'; btn.style.backgroundColor = 'var(--gold)'; btn.style.color = 'var(--bg)';
-                topBar.style.transform = 'translateY(0)'; bottomBar.style.transform = 'translateY(0)';
-                document.body.classList.remove('reading-mode'); 
+                btn.innerHTML = 'تلقائي ⏵'; btn.style.backgroundColor = 'var(--gold)'; btn.style.color = 'var(--bg)';
             } else { 
-                sInt = setInterval(() => window.scrollBy(0, speed), 50); isS = true; 
+                sInt = setInterval(() => window.scrollBy({ top: speed * 3, behavior: 'auto' }), 50); isS = true; 
                 btn.innerHTML = 'إيقاف ⏸'; btn.style.backgroundColor = '#DC2626'; btn.style.color = 'white';
                 topBar.style.transform = 'translateY(-100%)'; bottomBar.style.transform = 'translateY(100%)';
                 document.body.classList.add('reading-mode'); 
             }
         }
 
-        document.getElementById('mainContainer').addEventListener('click', () => { if(isS) toggleScroll(); });
+        // 🌟 نظام التقليب الذكي بلمس الشاشة 🌟
+        document.getElementById('mainContainer').addEventListener('click', (e) => { 
+            // إذا كان التمرير التلقائي يعمل، اللمسة الواحدة توقفه فقط
+            if (isS) { toggleAutoScroll(); return; }
+
+            const screenWidth = window.innerWidth;
+            const clickX = e.clientX;
+            // نحسب 92% من ارتفاع الشاشة للقفز، ليبقى سطر بسيط كسياق للقارئ
+            const jumpHeight = window.innerHeight * 0.92; 
+
+            if (clickX < screenWidth * 0.35) {
+                // لمس يسار الشاشة: تقليب للصفحة التالية (نزول)
+                window.scrollBy({ top: jumpHeight, behavior: 'smooth' });
+            } else if (clickX > screenWidth * 0.65) {
+                // لمس يمين الشاشة: تقليب للصفحة السابقة (صعود)
+                window.scrollBy({ top: -jumpHeight, behavior: 'smooth' });
+            } else {
+                // لمس منتصف الشاشة: إخفاء / إظهار الأشرطة (وضع القراءة)
+                const topBar = document.getElementById('topBar');
+                const bottomBar = document.getElementById('bottomBar');
+                if (topBar.style.transform === 'translateY(-100%)') {
+                    topBar.style.transform = 'translateY(0)'; bottomBar.style.transform = 'translateY(0)';
+                    document.body.classList.remove('reading-mode');
+                } else {
+                    topBar.style.transform = 'translateY(-100%)'; bottomBar.style.transform = 'translateY(100%)';
+                    document.body.classList.add('reading-mode');
+                }
+            }
+        });
+
         function changeSpeed(v) { speed = Math.max(0.2, Math.min(speed + v, 5)); }
     </script>
 </body>
