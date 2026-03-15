@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مصحف التهجد - الذكي</title>
+    <title>مصحف التهجد - النقي</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Lateef:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
     
@@ -19,7 +19,6 @@
         [data-theme="medium"] { --bg: #2B1E16; --txt: #E6D5B8; --gold: #D48C5B; --box: #38281F; --frame-out: #1E120D; --paper-texture: none; }
         [data-theme="light"] { --bg: #F0F2F5; --txt: #1C1E21; --gold: #228B22; --box: #E4E6EB; --frame-out: #2E4053; --paper-texture: none; }
 
-        /* تفعيل التمرير الانسيابي السريع عند تقليب الصفحات */
         html { scroll-behavior: smooth; }
 
         body {
@@ -27,7 +26,6 @@
             background-color: var(--box); color: var(--txt);
             font-family: var(--font-family); text-align: justify; line-height: 1.5;
             transition: background-color 0.4s, color 0.4s; overflow-x: hidden;
-            /* منع تحديد النص لتسهيل اللمس السريع */
             user-select: none; -webkit-user-select: none;
         }
 
@@ -47,17 +45,35 @@
         body.layout-tablet .container { max-width: 850px !important; padding: 15px !important; }
         body.layout-desktop .container { max-width: 1200px !important; padding: 20px !important; }
 
+        /* القائمة العلوية الأساسية */
         .top-bar {
-            position: fixed; top: 0; left: 0; right: 0; background: var(--box); padding: 8px 15px;
+            position: fixed; top: 0; left: 0; right: 0; height: 55px; background: var(--box); padding: 0 15px;
             text-align: center; border-bottom: 2px solid var(--gold); z-index: 1000; 
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3); transition: transform 0.4s ease;
         }
         .icon-btn { background: transparent; color: var(--gold); border: none; font-size: 22px; cursor: pointer; outline: none; transition: transform 0.2s; }
         .icon-btn:active { transform: scale(0.9); }
-        .live-location { flex-grow: 1; text-align: center; color: var(--gold); font-weight: bold; font-size: 15px; letter-spacing: -0.5px; font-family: Arial, sans-serif; }
+        .live-location { flex-grow: 1; text-align: center; color: var(--gold); font-weight: bold; font-size: 15px; }
 
-        .progress-container { position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: rgba(0,0,0,0.1); }
+        /* 👑 شريط الحالة الذكي (يظهر فقط في وضع القراءة) 👑 */
+        .reading-hud {
+            position: fixed; top: 0; left: 0; right: 0; height: 45px; background: var(--box);
+            border-bottom: 2px solid var(--gold); z-index: 999;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 15px; box-sizing: border-box;
+            transform: translateY(-100%); opacity: 0; transition: all 0.4s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        body.reading-mode .reading-hud { transform: translateY(0); opacity: 1; }
+        
+        .hud-page-box {
+            background: var(--gold); color: var(--bg); padding: 4px 10px; border-radius: 6px; 
+            font-weight: bold; font-size: 13px; box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+        .hud-info { color: var(--gold); font-size: 13px; font-weight: bold; text-align: right; flex-grow: 1; margin-right: 15px;}
+        .hud-info span { color: var(--txt); font-size: 11px; opacity: 0.8; }
+
+        .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(0,0,0,0.1); }
         .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease, background-color 0.5s ease; }
 
         .combined-header {
@@ -71,11 +87,7 @@
         .sura-name::before, .sura-name::after { content: ' ۞ '; font-size: 70%; }
         .basmalah-inline { color: var(--txt); font-size: var(--font-size); font-weight: normal; }
 
-        .quran-text { 
-            font-size: var(--font-size); font-weight: var(--font-weight); 
-            letter-spacing: -0.5px; word-spacing: -1.2px; transition: font-size 0.3s; 
-        }
-        
+        .quran-text { font-size: var(--font-size); font-weight: var(--font-weight); letter-spacing: -0.5px; word-spacing: -1.2px; transition: font-size 0.3s; }
         .ayah-num { position: relative; display: inline-flex; align-items: center; justify-content: center; width: calc(var(--font-size) * 1.8); height: calc(var(--font-size) * 1.8); font-size: calc(var(--font-size) * 0.8); font-family: Arial, sans-serif; font-weight: bold; color: var(--txt); margin: 0 4px; vertical-align: middle; z-index: 1; }
         .ayah-num::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--gold); -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; z-index: -1; }
 
@@ -96,20 +108,6 @@
         .size-btn { font-size: 16px; padding: 2px 15px; flex: none; }
         .size-display { font-size: 16px; font-weight: bold; color: var(--gold); min-width: 30px; text-align: center; }
 
-        .page-indicator {
-            position: fixed; bottom: 70px; left: 15px; background: var(--box); color: var(--txt);
-            padding: 6px 15px; border: 1px solid var(--gold); border-radius: 20px;
-            font-size: 13px; font-weight: bold; font-family: Arial, sans-serif;
-            z-index: 9997; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            transition: all 0.5s ease; pointer-events: none; display: flex; align-items: center; gap: 8px;
-        }
-        .indicator-hl { color: var(--gold); font-size: 14px; transition: color 0.5s ease;}
-        body.reading-mode .page-indicator { bottom: 15px; opacity: 0.5; }
-
-        @keyframes gentlePulse { 0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); border-color: var(--gold); } 100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.4); } }
-        .pulse-active { animation: gentlePulse 2s infinite; border-color: var(--gold) !important; }
-        .success-text { color: #22C55E !important; }
-
         .toast {
             position: fixed; top: -60px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--bg); padding: 10px 20px; border-radius: 20px;
             font-weight: bold; font-size: 14px; z-index: 10001; transition: top 0.5s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center;
@@ -126,15 +124,15 @@
         <button class="icon-btn" onclick="toggleFullScreen()" title="ملء الشاشة">⛶</button>
         <div class="live-location" id="liveLocation">جاري التحميل...</div>
         <button class="icon-btn" onclick="toggleIndex(event)" title="الفهرس">📖</button>
+    </div>
+
+    <div class="reading-hud" id="readingHud">
+        <div class="hud-info" id="hudInfo">سورة ... <span>(متبقي ...)</span></div>
+        <div class="hud-page-box" id="hudPageBox">ص ١</div>
         <div class="progress-container"><div class="progress-bar" id="topProgressBar"></div></div>
     </div>
 
     <div id="celebrationToast" class="toast">✨ ما شاء الله! بدأت الآن في الجزء الجديد</div>
-
-    <div id="pageIndicator" class="page-indicator">
-        <span class="indicator-hl" id="indTitle">...</span>
-        <span id="indDetails"></span>
-    </div>
 
     <div class="popup-panel" id="indexPanel">
         <div style="text-align:center; color:var(--gold); font-weight:bold; margin-bottom:5px;">📖 فهرس القرآن الكريم</div>
@@ -151,11 +149,11 @@
         <div class="settings-row">
             <select class="setting-select" id="colorSelect" onchange="changeColor(this.value)"><option value="#C5A059">✨ ذهبي</option><option value="#8B1E13">🔴 عنابي</option><option value="#16A34A">💚 أخضر</option><option value="#3B82F6">💙 أزرق</option></select>
             <select class="setting-select" id="fontSelect" onchange="changeFont(this)">
-                <option value="'Uthmanic', serif" data-weight="400">✍️ الرسم العثماني (الافتراضي)</option>
+                <option value="'Uthmanic', serif" data-weight="400">✍️ الرسم العثماني</option>
                 <option value="'Noto Naskh Arabic', serif" data-weight="700">✍️ نسخ جوجل (عريض)</option>
-                <option value="'Scheherazade New', serif" data-weight="700">✍️ شهرزاد (عريض ومريح)</option>
-                <option value="'Amiri Quran', serif" data-weight="400">✍️ أميري قرآن (كلاسيكي)</option>
-                <option value="'Lateef', serif" data-weight="700">✍️ لطيف (عريض وكبير)</option>
+                <option value="'Scheherazade New', serif" data-weight="700">✍️ شهرزاد (عريض)</option>
+                <option value="'Amiri Quran', serif" data-weight="400">✍️ أميري قرآن</option>
+                <option value="'Lateef', serif" data-weight="700">✍️ لطيف (عريض)</option>
             </select>
         </div>
         <div class="settings-row" style="justify-content:center; align-items:center; background:var(--bg); border:1px solid var(--gold); border-radius:6px; padding:5px;">
@@ -191,30 +189,24 @@
             let savedSize = localStorage.getItem('quran_size'); if(savedSize) { currentFontSize = parseInt(savedSize); document.documentElement.style.setProperty('--font-size', currentFontSize + 'px'); document.getElementById('sizeDisplay').innerText = currentFontSize; }
             let savedTheme = localStorage.getItem('quran_theme'); if(savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeSelect').value = savedTheme; }
             let savedColor = localStorage.getItem('quran_color'); if(savedColor) { document.documentElement.style.setProperty('--mark-color', savedColor); document.getElementById('colorSelect').value = savedColor; }
-            
-            let savedFont = localStorage.getItem('quran_font'); 
-            let savedWeight = localStorage.getItem('quran_weight') || '400';
+            let savedFont = localStorage.getItem('quran_font'); let savedWeight = localStorage.getItem('quran_weight') || '400';
             const validFonts = ["'Uthmanic', serif", "'Noto Naskh Arabic', serif", "'Scheherazade New', serif", "'Amiri Quran', serif", "'Lateef', serif"];
             if(savedFont && validFonts.includes(savedFont)) { document.documentElement.style.setProperty('--font-family', savedFont); document.documentElement.style.setProperty('--font-weight', savedWeight); document.getElementById('fontSelect').value = savedFont; } 
             else { document.documentElement.style.setProperty('--font-family', "'Uthmanic', serif"); document.documentElement.style.setProperty('--font-weight', '400'); document.getElementById('fontSelect').value = "'Uthmanic', serif"; }
-
             let savedLayout = localStorage.getItem('quran_layout'); if(savedLayout) { document.body.className = 'layout-' + savedLayout; document.getElementById('layoutSelect').value = savedLayout; }
 
             const juzSelect = document.getElementById('juzIndex'); juzSelect.innerHTML = '<option value="" disabled selected>📜 الانتقال لجزء معين...</option>'; for(let i=1; i<=30; i++) juzSelect.innerHTML += `<option value="${i}">الجزء ${i}</option>`;
             const suraNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
             const suraSelect = document.getElementById('suraIndex'); suraSelect.innerHTML = '<option value="" disabled selected>📖 الانتقال لسورة معينة...</option>'; suraNames.forEach((name, i) => suraSelect.innerHTML += `<option value="${i+1}">${i+1}. ${name}</option>`);
 
-            let savedMode = localStorage.getItem('quran_last_mode') || 'surah';
-            let savedIndex = localStorage.getItem('quran_last_index') || 1;
+            let savedMode = localStorage.getItem('quran_last_mode') || 'surah'; let savedIndex = localStorage.getItem('quran_last_index') || 1;
             if(savedMode === 'juz') document.getElementById('juzIndex').value = savedIndex; else document.getElementById('suraIndex').value = savedIndex;
-            
             loadData(savedMode, savedIndex);
         });
 
         function jumpTo(mode, index) {
             if (!index) return;
-            if (mode === 'juz') document.getElementById('suraIndex').selectedIndex = 0;
-            else document.getElementById('juzIndex').selectedIndex = 0;
+            if (mode === 'juz') document.getElementById('suraIndex').selectedIndex = 0; else document.getElementById('juzIndex').selectedIndex = 0;
             loadData(mode, index); toggleIndex(); 
         }
 
@@ -257,6 +249,7 @@
                 }
                 activeChunkIndex = itemIndex;
 
+                // 👑 الحساب الدقيق للصفحات وتحديث الشريط الذكي
                 const h = window.innerHeight;
                 let scrolledInside = Math.max(0, -activeRect.top); 
                 let currentPage = Math.floor(scrolledInside / h) + 1;
@@ -268,14 +261,14 @@
                 topProgressBar.style.width = percent + '%';
                 if(percent > 85) { topProgressBar.style.backgroundColor = '#22C55E'; } else { topProgressBar.style.backgroundColor = 'var(--gold)'; }
 
-                document.getElementById('indTitle').innerText = `${modeName} ${toAr(itemIndex)}`;
-                const indicator = document.getElementById('pageIndicator'); const titleSpan = document.getElementById('indTitle');
+                // تحديث المربع الواضح لرقم الصفحة في الأعلى
+                document.getElementById('hudPageBox').innerText = `ص ${toAr(currentPage)}`;
+                
+                // تحديث النص التحفيزي في الشريط العلوي الذكي
                 if(remaining > 0) { 
-                    document.getElementById('indDetails').innerHTML = `• متبقي ${toAr(remaining)} صفحات <span style="color:var(--gold); font-size:11px;">(${toAr(Math.floor(percent))}%)</span>`; 
-                    indicator.classList.remove('pulse-active'); titleSpan.classList.remove('success-text');
+                    document.getElementById('hudInfo').innerHTML = `${modeName} ${toAr(itemIndex)} <span>(متبقي ${toAr(remaining)})</span>`; 
                 } else { 
-                    document.getElementById('indDetails').innerHTML = `• أوشكت على الختم! 👏 <span style="color:#22C55E; font-size:11px;">(١٠٠%)</span>`; 
-                    if(totalPages > 1) { indicator.classList.add('pulse-active'); titleSpan.classList.add('success-text'); }
+                    document.getElementById('hudInfo').innerHTML = `${modeName} ${toAr(itemIndex)} <span style="color:#22C55E;">(أوشكت على الختم! 👏)</span>`; 
                 }
             }
         }
@@ -285,13 +278,11 @@
         function changeTheme(val) { document.documentElement.setAttribute('data-theme', val); saveSetting('quran_theme', val); }
         function changeColor(val) { document.documentElement.style.setProperty('--mark-color', val); saveSetting('quran_color', val); }
         function changeLayout(val) { document.body.className = 'layout-' + val; saveSetting('quran_layout', val); setTimeout(calculateSmartProgress, 200); }
-        
         function changeFont(selectObj) { 
             const val = selectObj.value; const weight = selectObj.options[selectObj.selectedIndex].getAttribute('data-weight') || '400';
             document.documentElement.style.setProperty('--font-family', val); document.documentElement.style.setProperty('--font-weight', weight); 
             saveSetting('quran_font', val); saveSetting('quran_weight', weight); setTimeout(calculateSmartProgress, 200); 
         }
-
         function changeFontSize(step) {
             currentFontSize += step; if(currentFontSize < 8) currentFontSize = 8; if(currentFontSize > 60) currentFontSize = 60;
             document.documentElement.style.setProperty('--font-size', currentFontSize + 'px');
@@ -302,7 +293,7 @@
         function toggleFullScreen() {
             const doc = window.document; const docEl = doc.documentElement;
             const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-            const cancelFullScreen = doc.exitFullscreen || doc.mozFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+            const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
             try { if (!doc.fullscreenElement) { requestFullScreen.call(docEl); document.getElementById('fsBtn').innerHTML = '✖'; } else { cancelFullScreen.call(doc); document.getElementById('fsBtn').innerHTML = '⛶'; } } catch(e) {}
         }
 
@@ -366,8 +357,6 @@
         observer.observe(document.getElementById('sentinel'));
 
         let sInt; let isS = false; let speed = 0.5;
-        
-        // 🌟 دالة التشغيل التلقائي المحدثة
         function toggleAutoScroll(e) {
             if(e) e.stopPropagation(); 
             const btn = document.getElementById('pBtn'); const topBar = document.getElementById('topBar'); const bottomBar = document.getElementById('bottomBar');
@@ -384,24 +373,25 @@
             }
         }
 
-        // 🌟 نظام التقليب الذكي بلمس الشاشة 🌟
+        // 👑 نظام التقليب الذكي بلمس الشاشة (100% تقليب صفحات صافي) 👑
         document.getElementById('mainContainer').addEventListener('click', (e) => { 
-            // إذا كان التمرير التلقائي يعمل، اللمسة الواحدة توقفه فقط
             if (isS) { toggleAutoScroll(); return; }
 
             const screenWidth = window.innerWidth;
             const clickX = e.clientX;
-            // نحسب 92% من ارتفاع الشاشة للقفز، ليبقى سطر بسيط كسياق للقارئ
-            const jumpHeight = window.innerHeight * 0.92; 
+            
+            // قفزة مثالية محسوبة بدقة (طول الشاشة ناقص مساحة البادينج العلوي)
+            // هذا يعطي صفحة منفصلة 100% دون تداخل الأسطر!
+            const exactJumpHeight = window.innerHeight - 55; 
 
             if (clickX < screenWidth * 0.35) {
                 // لمس يسار الشاشة: تقليب للصفحة التالية (نزول)
-                window.scrollBy({ top: jumpHeight, behavior: 'smooth' });
+                window.scrollBy({ top: exactJumpHeight, behavior: 'smooth' });
             } else if (clickX > screenWidth * 0.65) {
                 // لمس يمين الشاشة: تقليب للصفحة السابقة (صعود)
-                window.scrollBy({ top: -jumpHeight, behavior: 'smooth' });
+                window.scrollBy({ top: -exactJumpHeight, behavior: 'smooth' });
             } else {
-                // لمس منتصف الشاشة: إخفاء / إظهار الأشرطة (وضع القراءة)
+                // لمس منتصف الشاشة: تفعيل/إلغاء وضع القراءة الصافية
                 const topBar = document.getElementById('topBar');
                 const bottomBar = document.getElementById('bottomBar');
                 if (topBar.style.transform === 'translateY(-100%)') {
