@@ -3,37 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مصحف التهجد - الفاخر</title>
+    <title>مصحف التهجد - الملكي</title>
+    
     <style>
         :root {
-            --bg: #000000; --box: rgba(20, 20, 20, 0.9); --gold: #D4AF37; --frame-out: #333333;
+            --bg: #000000; --box: rgba(20, 20, 20, 0.9); --gold: #D4AF37; --frame-out: #333333; --txt: #fff;
         }
+
         body {
             margin: 0; padding: 0; background-color: var(--bg); 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             min-height: 100vh; overflow: hidden; user-select: none; -webkit-user-select: none;
-            font-family: Arial, sans-serif;
+            font-family: Arial, sans-serif; transition: background-color 0.4s ease;
         }
         
-        /* 👑 حاوية صفحة المصحف 👑 */
+        /* 👑 حاوية المصحف والتكبير 👑 */
         .page-container {
-            width: 100%; max-width: 600px; height: 100vh;
+            width: 100%; height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            position: relative;
+            position: relative; overflow: hidden; /* لمنع ظهور الحواف عند التكبير */
         }
         
-        /* الصورة مخفية حتى يتم تحميلها بالكامل */
         .quran-image {
             width: 100%; height: 100%; object-fit: contain;
-            transition: filter 0.4s ease; display: none; 
+            transition: transform 0.3s ease, filter 0.5s ease; 
+            display: none; transform-origin: center center;
         }
         
-        /* السحر: قلب الألوان للوضع الليلي (الأسود العميق) */
-        body.dark-mode .quran-image {
-            filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.2);
+        /* 🎨 فلاتر الألوان السينمائية للمصحف 🎨 */
+        body[data-theme="light"] { --bg: #FFFFFF; --box: rgba(240, 240, 240, 0.9); --txt: #000; --gold: #15803D;}
+        body[data-theme="light"] .quran-image { filter: contrast(1.1); }
+
+        body[data-theme="oled"] { --bg: #000000; --box: rgba(17, 17, 17, 0.9); --txt: #fff; }
+        body[data-theme="oled"] .quran-image { 
+            /* يقلب الألوان، ويحافظ على الذهبي */
+            filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.2); 
+        }
+
+        body[data-theme="navy"] { --bg: #0B132B; --box: rgba(28, 37, 65, 0.9); --txt: #E2E8F0; }
+        body[data-theme="navy"] .quran-image { 
+            /* كحلي هادئ جداً */
+            filter: invert(1) sepia(1) hue-rotate(170deg) saturate(2) brightness(0.8) contrast(1.2); 
+        }
+
+        body[data-theme="sepia"] { --bg: #FDF6E3; --box: rgba(244, 232, 209, 0.9); --txt: #2C1A0B; --gold: #B8860B; }
+        body[data-theme="sepia"] .quran-image { 
+            /* ورق أصفر عتيق */
+            filter: sepia(0.5) brightness(0.95) contrast(1.1); 
         }
         
-        /* البار العلوي (شريط الحالة) */
+        /* شريط الحالة العلوي */
         .reading-hud {
             position: fixed; top: 0; left: 0; right: 0; height: 50px; 
             background: var(--box); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -45,48 +64,48 @@
 
         .hud-info { color: var(--gold); font-size: 15px; font-weight: bold; flex-grow: 1; text-align: center; }
         .hud-page-box { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 14px; }
-        .icon-btn { background: transparent; color: var(--gold); border: none; font-size: 22px; cursor: pointer; outline: none; }
+        .icon-btn { background: transparent; color: var(--gold); border: none; font-size: 22px; cursor: pointer; outline: none; transition: transform 0.2s;}
+        .icon-btn:active { transform: scale(0.9); }
 
-        /* نافذة الفهرس */
+        /* مناطق اللمس السريعة */
+        .touch-zone { position: absolute; top: 0; bottom: 0; z-index: 500; }
+        .touch-left { left: 0; width: 35%; }
+        .touch-right { right: 0; width: 35%; }
+        .touch-center { left: 35%; width: 30%; }
+
+        /* مؤشر التحميل */
+        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--gold); font-size: 18px; font-weight: bold; z-index: 100;}
+
+        /* النوافذ المنبثقة (الفهرس والإعدادات) */
         .bottom-sheet {
             position: fixed; bottom: -100%; left: 0; right: 0; background: var(--box);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-top: 2px solid var(--frame-out); border-radius: 25px 25px 0 0;
-            padding: 25px 20px; z-index: 2000; transition: bottom 0.4s ease;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.7);
+            border-top: 2px solid var(--gold); border-radius: 25px 25px 0 0;
+            padding: 25px 20px; z-index: 2000; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
         }
         .bottom-sheet.active { bottom: 0; }
         .sheet-title { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 20px; font-size: 16px; }
-        .sheet-close { position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: var(--gold); font-size: 20px; cursor: pointer; }
-        .setting-select { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; outline: none; width: 100%; margin-bottom: 15px; text-align: center; appearance: none;}
-
-        /* الكبسولة السفلية */
-        .floating-controls {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--box); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--frame-out); border-radius: 30px;
-            display: flex; justify-content: center; align-items: center; padding: 5px 20px; gap: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; transition: transform 0.4s ease, opacity 0.4s ease;
-        }
-        body.focus-mode .floating-controls { transform: translate(-50%, 150%); opacity: 0; }
+        .sheet-close { position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: var(--txt); font-size: 20px; cursor: pointer; }
         
-        .ctrl-btn { background: transparent; color: #fff; border: none; font-size: 16px; font-weight: bold; cursor: pointer; padding: 8px; }
+        .setting-select { background: rgba(128,128,128,0.2); color: var(--txt); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; outline: none; width: 100%; margin-bottom: 15px; text-align: center; appearance: none;}
+        
+        .size-control { display: flex; justify-content: space-between; align-items: center; background: rgba(128,128,128,0.2); border: 1px solid var(--gold); border-radius: 10px; padding: 10px; }
+        .sz-btn { background: transparent; border: none; color: var(--txt); font-size: 24px; padding: 0 20px; cursor: pointer; font-weight: bold;}
+        .sz-disp { color: var(--gold); font-weight: bold; font-size: 18px; }
 
-        /* مناطق اللمس لتقليب الصفحات بيد واحدة */
-        .touch-zone { position: absolute; top: 0; bottom: 0; z-index: 500; }
-        .touch-left { left: 0; width: 40%; }
-        .touch-right { right: 0; width: 40%; }
-        .touch-center { left: 40%; width: 20%; }
+        /* انتقال ناعم للصفحات */
+        .fade-in { animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--gold); font-size: 16px; font-weight: bold; z-index: 100;}
     </style>
 </head>
-<body class="dark-mode">
+<body data-theme="oled">
 
     <div class="reading-hud" id="readingHud">
-        <button class="icon-btn" onclick="openIndex()" title="الفهرس">📖</button>
+        <button class="icon-btn" onclick="openSheet('settingsSheet')" title="الإعدادات">⚙️</button>
         <div class="hud-info" id="hudInfo">جاري التحميل...</div>
-        <button class="icon-btn" onclick="toggleTheme()" title="تغيير اللون">🌓</button>
+        <button class="icon-btn" onclick="openSheet('indexSheet')" title="الفهرس">📖</button>
     </div>
 
     <div class="page-container">
@@ -98,114 +117,133 @@
         <div class="touch-zone touch-right" onclick="prevPage()"></div>
     </div>
 
-    <div class="floating-controls" id="bottomBar">
-        <button class="ctrl-btn" onclick="prevPage()">السابق</button>
-        <div class="hud-page-box" id="hudPageBox" style="margin:0 10px;">ص ١</div>
-        <button class="ctrl-btn" onclick="nextPage()">التالي</button>
-    </div>
-
     <div class="bottom-sheet" id="indexSheet">
-        <button class="sheet-close" onclick="closeIndex()">✖</button>
+        <button class="sheet-close" onclick="closeSheets()">✖</button>
         <div class="sheet-title">الفهرس السريع</div>
         <select class="setting-select" id="juzIndex" onchange="jumpTo('juz', this.value)"></select>
         <select class="setting-select" id="suraIndex" onchange="jumpTo('surah', this.value)"></select>
+    </div>
+
+    <div class="bottom-sheet" id="settingsSheet">
+        <button class="sheet-close" onclick="closeSheets()">✖</button>
+        <div class="sheet-title">إعدادات العرض الفاخرة</div>
+        
+        <select class="setting-select" id="themeSelect" onchange="changeTheme(this.value)">
+            <option value="oled">🌑 ليلي عميق (للاختلاء والتهجد)</option>
+            <option value="navy">🌌 كحلي هادئ (مريح للعين)</option>
+            <option value="sepia">📜 ورق عتيق (إضاءة خافتة)</option>
+            <option value="light">☀️ نهار ناصع (إضاءة قوية)</option>
+        </select>
+        
+        <div style="text-align:center; color:var(--txt); margin-bottom:10px; font-size:13px;">حجم الآيات (تكبير لإخفاء الزخرفة):</div>
+        <div class="size-control">
+            <button class="sz-btn" onclick="changeZoom(5)">+</button>
+            <span class="sz-disp" id="zoomDisplay">100%</span>
+            <button class="sz-btn" onclick="changeZoom(-5)">-</button>
+        </div>
     </div>
 
     <script>
         let currentPage = parseInt(localStorage.getItem('quran_page')) || 1;
         const totalPages = 604;
         let isFetching = false;
+        let currentZoom = parseInt(localStorage.getItem('quran_zoom')) || 100;
         const toAr = (n) => n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 
         document.addEventListener("DOMContentLoaded", () => {
-            // تفعيل الوضع الليلي أو النهاري
-            let savedTheme = localStorage.getItem('quran_theme_mode');
-            if (savedTheme === 'light') document.body.classList.remove('dark-mode');
+            let savedTheme = localStorage.getItem('quran_theme_mode') || 'oled';
+            document.body.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeSelect').value = savedTheme;
             
-            // تعبئة الفهارس
-            const juzSelect = document.getElementById('juzIndex'); juzSelect.innerHTML = '<option value="" disabled selected>📜 اختر الجزء...</option>'; for(let i=1; i<=30; i++) juzSelect.innerHTML += `<option value="${i}">الجزء ${toAr(i)}</option>`;
+            applyZoom();
+
+            const juzSelect = document.getElementById('juzIndex'); juzSelect.innerHTML = '<option value="" disabled selected>📜 الانتقال لجزء معين...</option>'; for(let i=1; i<=30; i++) juzSelect.innerHTML += `<option value="${i}">الجزء ${toAr(i)}</option>`;
             const suraNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-            const suraSelect = document.getElementById('suraIndex'); suraSelect.innerHTML = '<option value="" disabled selected>📖 اختر السورة...</option>'; suraNames.forEach((name, i) => suraSelect.innerHTML += `<option value="${i+1}">${i+1}. ${name}</option>`);
+            const suraSelect = document.getElementById('suraIndex'); suraSelect.innerHTML = '<option value="" disabled selected>📖 الانتقال لسورة معينة...</option>'; suraNames.forEach((name, i) => suraSelect.innerHTML += `<option value="${i+1}">${i+1}. ${name}</option>`);
 
             loadPage(currentPage);
         });
 
-        // 🌟 دالة جلب الصور من جامعة الملك سعود 🌟
+        // 🌟 جلب الصورة مع تأثير التلاشي الناعم 🌟
         async function loadPage(pageNum) {
             if (pageNum < 1 || pageNum > totalPages || isFetching) return;
             isFetching = true;
             
-            document.getElementById('loading').innerText = 'جاري جلب الصفحة ⏳...';
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('quranImage').style.display = 'none';
-            
             const img = document.getElementById('quranImage');
-            // هنا السيرفر الرسمي والمضمون 100%
+            img.style.display = 'none';
+            img.classList.remove('fade-in');
+            
             img.src = `https://quran.ksu.edu.sa/ayat/safahat1/${pageNum}.png`;
             
             img.onload = () => {
                 document.getElementById('loading').style.display = 'none';
                 img.style.display = 'block';
+                // Trigger reflow لحركة الانيميشن
+                void img.offsetWidth; 
+                img.classList.add('fade-in');
                 isFetching = false;
             };
             
-            img.onerror = () => {
-                document.getElementById('loading').innerText = '❌ فشل تحميل الصورة. تأكد من الاتصال بالإنترنت.';
-                isFetching = false;
-            };
+            img.onerror = () => { document.getElementById('loading').innerText = '❌ فشل التحميل. يرجى التحديث.'; isFetching = false; };
 
-            // تحديث بيانات الشريط العلوي (السورة والجزء)
             try {
                 const res = await fetch(`https://api.alquran.cloud/v1/page/${pageNum}/quran-uthmani`);
                 const data = await res.json();
                 const suraName = data.data.ayahs[0].surah.name;
                 const juzNum = data.data.ayahs[0].juz;
                 
+                // تحديث بيانات الشريط العلوي مع وضع زر الفهرس في المنتصف
                 document.getElementById('hudInfo').innerText = `سورة ${suraName} • الجزء ${toAr(juzNum)}`;
-                document.getElementById('hudPageBox').innerText = `ص ${toAr(pageNum)}`;
                 
-                currentPage = pageNum;
-                localStorage.setItem('quran_page', currentPage);
+                // إضافة رقم الصفحة كزر إضافي إذا أحببت، أو نكتفي بالمربع
+                let pageBox = document.getElementById('hudPageBox');
+                if(!pageBox) {
+                    pageBox = document.createElement('div');
+                    pageBox.id = 'hudPageBox';
+                    pageBox.className = 'hud-page-box';
+                    document.getElementById('readingHud').appendChild(pageBox);
+                }
+                pageBox.innerText = `ص ${toAr(pageNum)}`;
+                
+                currentPage = pageNum; localStorage.setItem('quran_page', currentPage);
             } catch(e) {}
         }
 
-        // 🌟 دالة الانتقال الذكي من الفهرس 🌟
+        // 🌟 دوال التحكم والنوافذ 🌟
+        function openSheet(id) { closeSheets(); document.getElementById(id).classList.add('active'); document.body.classList.remove('focus-mode'); }
+        function closeSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('active')); }
+        
         async function jumpTo(mode, index) {
             if (!index) return;
-            closeIndex();
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('loading').innerText = 'جاري البحث... ⏳';
-            document.getElementById('quranImage').style.display = 'none';
-            
+            closeSheets(); document.getElementById('loading').style.display = 'block'; document.getElementById('loading').innerText = 'جاري البحث... ⏳'; document.getElementById('quranImage').style.display = 'none';
             try {
-                // نسأل قاعدة البيانات: في أي صفحة يبدأ هذا الجزء/السورة؟
                 const response = await fetch(`https://api.alquran.cloud/v1/${mode}/${index}`);
                 const data = await response.json();
                 const startPage = data.data.ayahs[0].page;
-                
-                if (mode === 'juz') document.getElementById('suraIndex').selectedIndex = 0; 
-                else document.getElementById('juzIndex').selectedIndex = 0;
-                
-                loadPage(startPage); // القفز لصفحة السورة
-            } catch(e) {
-                document.getElementById('loading').innerText = '❌ حدث خطأ';
-            }
+                if (mode === 'juz') document.getElementById('suraIndex').selectedIndex = 0; else document.getElementById('juzIndex').selectedIndex = 0;
+                loadPage(startPage); 
+            } catch(e) { document.getElementById('loading').innerText = '❌ حدث خطأ'; }
         }
-
-        function openIndex() { document.getElementById('indexSheet').classList.add('active'); document.body.classList.remove('focus-mode'); }
-        function closeIndex() { document.getElementById('indexSheet').classList.remove('active'); }
 
         function nextPage() { if(currentPage < totalPages) loadPage(currentPage + 1); }
         function prevPage() { if(currentPage > 1) loadPage(currentPage - 1); }
+        function toggleFocus() { document.body.classList.toggle('focus-mode'); closeSheets(); }
         
-        // وضع التركيز والقراءة
-        function toggleFocus() { document.body.classList.toggle('focus-mode'); closeIndex(); }
-        
-        // تغيير الثيم
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            if(document.body.classList.contains('dark-mode')) { localStorage.setItem('quran_theme_mode', 'dark'); } 
-            else { localStorage.setItem('quran_theme_mode', 'light'); }
+        function changeTheme(val) { document.body.setAttribute('data-theme', val); localStorage.setItem('quran_theme_mode', val); }
+
+        // 🌟 نظام الزووم (التكبير الذكي وإخفاء الزخرفة) 🌟
+        function changeZoom(step) {
+            currentZoom += step;
+            if(currentZoom < 90) currentZoom = 90;
+            if(currentZoom > 150) currentZoom = 150;
+            applyZoom();
+            localStorage.setItem('quran_zoom', currentZoom);
+        }
+        function applyZoom() {
+            document.getElementById('zoomDisplay').innerText = toAr(currentZoom) + '%';
+            // تمديد الصورة بنسبة مئوية لاقتطاع الحواف إذا رغب المستخدم
+            document.getElementById('quranImage').style.transform = `scale(${currentZoom / 100})`;
         }
     </script>
 </body>
