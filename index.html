@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مصحف التهجد - الملكي</title>
+    <title>مصحف التهجد - النقي</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap" rel="stylesheet">
     
     <style>
-        /* استدعاء خط مجمع الملك فهد الرسمي (مصحف المدينة) */
+        /* 👑 الحل الجذري: الخط المتوافق 100% مع قاعدة البيانات 👑 */
         @font-face { 
             font-family: 'Madinah'; 
-            src: url('https://cdn.jsdelivr.net/gh/mushaf-ar/quran-web@master/fonts/UthmanicHafs1Ver09.woff2') format('woff2'); 
+            src: url('https://cdn.alquran.cloud/public/fonts/me_quran.woff2') format('woff2'),
+                 url('https://cdn.alquran.cloud/public/fonts/me_quran.ttf') format('truetype'); 
             font-display: swap; 
         }
 
         :root, [data-theme="oled"] {
             --bg: #000000; --txt: #D1D5DB; --gold: #D4AF37; --box: rgba(17, 17, 17, 0.85); --frame-out: #222222; --mark-color: #D4AF37;
-            --font-family: 'Madinah', serif; --font-size: 22px; --font-weight: normal;
+            --font-family: 'Madinah', serif; --font-size: 24px; 
         }
         [data-theme="navy"] {
             --bg: #0B132B; --txt: #E2E8F0; --gold: #FBBF24; --box: rgba(28, 37, 65, 0.85); --frame-out: #3A506B; --mark-color: #FBBF24;
@@ -45,7 +48,6 @@
             min-height: 85vh; transition: all 0.4s;
         }
 
-        /* البار العلوي */
         .glass-header {
             position: fixed; top: 0; left: 0; right: 0; height: 55px; 
             background: var(--box); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -56,7 +58,6 @@
         .icon-btn { background: transparent; color: var(--gold); border: none; font-size: 22px; cursor: pointer; outline: none; }
         .live-location { flex-grow: 1; text-align: center; color: var(--gold); font-family: Arial, sans-serif; font-size: 15px; font-weight:bold; }
 
-        /* شريط الحالة الذكي */
         .reading-hud {
             position: fixed; top: 0; left: 0; right: 0; height: 40px; background: var(--bg);
             border-bottom: 1px solid var(--frame-out); z-index: 999;
@@ -74,7 +75,6 @@
         .progress-container { position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: rgba(0,0,0,0.1); }
         .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease; }
 
-        /* الكبسولة السفلية */
         .floating-controls {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             background: var(--box); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -85,7 +85,6 @@
         .ctrl-btn { background: transparent; color: var(--txt); border: none; font-size: 14px; font-weight: bold; cursor: pointer; padding: 8px; font-family: Arial, sans-serif;}
         .play-btn { background: var(--gold); color: var(--bg); border-radius: 20px; padding: 8px 25px; font-size: 15px; }
 
-        /* ترويسة السورة */
         .combined-header {
             display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 5px;
             border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold);
@@ -95,11 +94,12 @@
         .sura-name::before, .sura-name::after { content: ' ۞ '; font-size: 70%; }
         .basmalah-inline { color: var(--txt); font-size: var(--font-size); }
 
-        /* 👑 محرك الخطوط المعالج 👑 */
+        /* 👑 إجبار المتصفح على دمج الحركات بشكل مثالي 👑 */
         .quran-text { 
             font-size: var(--font-size); 
-            line-height: 2.2; /* مساحة للتنفس ومنع التداخل */
-            text-rendering: optimizeLegibility; /* إجبار المتصفح على دقة الرسم */
+            line-height: 2.3; 
+            text-rendering: optimizeLegibility; 
+            font-feature-settings: "kern" 1, "liga" 1, "calt" 1; /* أكواد لتفعيل الترابط بين الحروف */
             transition: font-size 0.3s; 
         }
         
@@ -115,7 +115,6 @@
             mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; z-index: -1; 
         }
 
-        /* القوائم السفلية */
         .bottom-sheet {
             position: fixed; bottom: -100%; left: 0; right: 0; background: var(--box);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -139,7 +138,7 @@
         #sentinel { height: 50px; } 
     </style>
 </head>
-<body>
+<body class="layout-auto">
 
     <div class="glass-header" id="topBar">
         <button class="icon-btn" onclick="openSheet('settingsSheet')">⚙️</button>
@@ -184,13 +183,14 @@
         </div>
         <div class="settings-row">
             <select class="setting-select" id="fontSelect" onchange="changeFont(this.value)">
-                <option value="'Madinah', serif">👑 مصحف المدينة (الرسمي)</option>
+                <option value="'Madinah', serif">👑 مصحف المدينة (الأساسي)</option>
+                <option value="'Amiri Quran', serif">✍️ أميري قرآن (بديل)</option>
             </select>
         </div>
         <div class="settings-row">
             <div class="size-control">
                 <button class="sz-btn" onclick="changeFontSize(1)">+</button>
-                <span class="sz-disp" id="sizeDisplay">22</span>
+                <span class="sz-disp" id="sizeDisplay">24</span>
                 <button class="sz-btn" onclick="changeFontSize(-1)">-</button>
             </div>
         </div>
@@ -203,16 +203,17 @@
     </div>
 
     <script>
-        let currentFontSize = 22; 
+        let currentFontSize = 24; 
         let currentMode = 'surah'; let currentIndex = 1; let isFetching = false; let lastSuraRendered = '';
         let activeChunkIndex = null; let root = document.documentElement;
 
         function saveSetting(key, value) { localStorage.setItem(key, value); }
         
         document.addEventListener("DOMContentLoaded", () => {
-            let savedSize = localStorage.getItem('quran_size'); if(savedSize) { currentFontSize = parseInt(savedSize); root.style.setProperty('--font-size', currentFontSize + 'px'); document.getElementById('sizeDisplay').innerText = currentFontSize; }
+            let savedSize = localStorage.getItem('quran_size'); if(savedSize) { currentFontSize = parseInt(savedSize); root.style.setProperty('--font-size', currentFontSize + 'px'); document.getElementById('sizeDisplay').innerText = currentFontSize; } else { root.style.setProperty('--font-size', '24px'); }
             let savedTheme = localStorage.getItem('quran_theme') || 'oled'; root.setAttribute('data-theme', savedTheme); document.getElementById('themeSelect').value = savedTheme;
             let savedColor = localStorage.getItem('quran_color') || '#D4AF37'; root.style.setProperty('--mark-color', savedColor); document.getElementById('colorSelect').value = savedColor;
+            let savedFont = localStorage.getItem('quran_font') || "'Madinah', serif"; root.style.setProperty('--font-family', savedFont); document.getElementById('fontSelect').value = savedFont; 
 
             const juzSelect = document.getElementById('juzIndex'); juzSelect.innerHTML = '<option value="" disabled selected>📜 اختر الجزء...</option>'; for(let i=1; i<=30; i++) juzSelect.innerHTML += `<option value="${i}">الجزء ${i}</option>`;
             const suraNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
@@ -279,11 +280,7 @@
                 if(percent > 85) { topProgressBar.style.backgroundColor = '#22C55E'; } else { topProgressBar.style.backgroundColor = 'var(--gold)'; }
 
                 document.getElementById('hudPageBox').innerText = `ص ${toAr(currentPage)}`;
-                if(remaining > 0) { 
-                    document.getElementById('hudRemain').innerHTML = `(متبقي ${toAr(remaining)})`; 
-                } else { 
-                    document.getElementById('hudRemain').innerHTML = `<span style="color:#22C55E;">(أوشكت على الختم! 👏)</span>`; 
-                }
+                if(remaining > 0) { document.getElementById('hudRemain').innerHTML = `(متبقي ${toAr(remaining)})`; } else { document.getElementById('hudRemain').innerHTML = `<span style="color:#22C55E;">(أوشكت على الختم! 👏)</span>`; }
             }
         }
 
@@ -291,16 +288,23 @@
 
         function changeTheme(val) { root.setAttribute('data-theme', val); saveSetting('quran_theme', val); }
         function changeColor(val) { root.style.setProperty('--mark-color', val); saveSetting('quran_color', val); }
+        function changeFont(val) { root.style.setProperty('--font-family', val); saveSetting('quran_font', val); }
         function changeFontSize(step) {
             currentFontSize += step; if(currentFontSize < 10) currentFontSize = 10; if(currentFontSize > 60) currentFontSize = 60;
             root.style.setProperty('--font-size', currentFontSize + 'px');
             document.getElementById('sizeDisplay').innerText = currentFontSize; saveSetting('quran_size', currentFontSize);
             setTimeout(calculateSmartProgress, 100); 
         }
-        function changeFont(val) { root.style.setProperty('--font-family', val); saveSetting('quran_font', val); }
+
+        function toggleFullScreen() {
+            const doc = window.document; const docEl = doc.documentElement;
+            const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+            const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+            try { if (!doc.fullscreenElement) { requestFullScreen.call(docEl); } else { cancelFullScreen.call(doc); } } catch(e) {}
+        }
 
         function applyColors(text) {
-            // ✂️ مقص الليزر: يزيل المسافات المخفية قبل علامات الوقف لكي ترتفع العلامة فوق الكلمة!
+            // مقص المسافات لضمان ارتفاع علامات الوقف فوق الحروف بدلاً من بجانبها
             text = text.replace(/\s+([\u06D6-\u06DC\u06DF-\u06E3\u06E8\u06E9\u06ED])/g, '$1');
             
             let res = text.replace(/(ٱللَّهِ|ٱللَّهُ|ٱللَّهَ|لِلَّهِ|اللَّهِ|اللَّهُ|اللَّهَ)/g, '<span class="allah">$1</span>');
