@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مصحف التهجد - الصافي</title>
+    <title>مصحف التهجد - الصافي 100%</title>
     
     <style>
-        /* 👑 خط مجمع الملك فهد (النسخة المستقرة والمفتوحة المصدر) 👑 */
+        /* 👑 خط مجمع الملك فهد (النسخة المستقرة والموزونة) 👑 */
         @font-face { 
             font-family: 'Madinah'; 
             src: url('https://cdn.alquran.cloud/public/fonts/KFGQPC_Uthmanic_Script_HAFS_Regular.woff2') format('woff2'); 
@@ -15,19 +15,20 @@
 
         :root, [data-theme="oled"] {
             --bg: #000000; --txt: #E5E7EB; --gold: #D4AF37; --box: rgba(20, 20, 20, 0.95); --frame-out: #333333; 
-            --font-size: 32px; 
+            --font-size: 34px; 
         }
         
         body[data-theme="navy"] { --bg: #0B132B; --txt: #E2E8F0; --gold: #FBBF24; --box: rgba(28, 37, 65, 0.95); --frame-out: #3A506B; }
         body[data-theme="sepia"] { --bg: #FDF6E3; --txt: #2C1A0B; --gold: #B8860B; --box: rgba(244, 232, 209, 0.95); --frame-out: #8B5A2B; }
+        body[data-theme="light"] { --bg: #FFFFFF; --txt: #111827; --gold: #15803D; --box: rgba(243, 244, 246, 0.95); --frame-out: #9CA3AF; }
 
         html { scroll-behavior: smooth; }
 
         body {
-            margin: 0; padding: 0; padding-top: 70px; padding-bottom: 90px; 
+            margin: 0; padding: 0; padding-top: 70px; padding-bottom: 120px; /* مساحة سفلية إضافية لعدم تغطية الشريط للآيات */
             background-color: var(--bg); color: var(--txt);
             font-family: 'Madinah', Arial, sans-serif; 
-            text-align: right; /* المحاذاة الطبيعية لمنع التمدد */
+            text-align: right; 
             direction: rtl;
             transition: background-color 0.4s, color 0.4s; overflow-x: hidden;
             user-select: none; -webkit-user-select: none; cursor: default;
@@ -64,25 +65,24 @@
         .ctrl-btn { background: transparent; color: var(--txt); border: none; font-size: 15px; font-weight: bold; cursor: pointer; padding: 8px 15px; font-family: Arial, sans-serif;}
         .play-btn { background: var(--gold); color: #000; border-radius: 20px; padding: 8px 25px; font-size: 16px; font-weight: bold; }
 
-        /* 👑 النص القرآني المتين (خام وبدون أي تلاعب) 👑 */
+        /* 👑 النص القرآني المتين والموزون 👑 */
         .quran-text { 
             font-size: var(--font-size); 
-            line-height: 2.3; 
+            line-height: 2.8; /* 🚀 تم رفع المساحة العمودية لمنع تداخل الشدات والكسرات 🚀 */
             color: var(--txt);
             display: inline;
             text-rendering: optimizeLegibility;
             font-feature-settings: "kern" 1, "liga" 1, "mkmk" 1; /* دعم التشكيل المعقد */
+            word-spacing: normal; /* السماح للخط بوزن المسافات بنفسه */
+            letter-spacing: normal;
         }
 
+        /* 👑 أرقام الآيات القرآنية الأصيلة (الأقواس المذهبة) 👑 */
         .ayah-num { 
-            position: relative; display: inline-flex; align-items: center; justify-content: center; 
-            width: calc(var(--font-size) * 1.5); height: calc(var(--font-size) * 1.5); 
-            font-size: calc(var(--font-size) * 0.6); font-family: Arial, sans-serif; font-weight: bold; 
-            color: var(--txt); margin: 0 8px; vertical-align: middle; z-index: 1; line-height: 1;
-        }
-        .ayah-num::before { 
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--gold); 
-            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; z-index: -1; 
+            color: var(--gold); 
+            font-size: var(--font-size); 
+            margin: 0 6px; 
+            display: inline;
         }
 
         .sura-header {
@@ -99,11 +99,12 @@
         .touch-right { right: 0; width: 25%; }
         .touch-center { left: 25%; width: 50%; }
 
+        /* النوافذ والقوائم */
         .bottom-sheet {
             position: fixed; bottom: -100%; left: 0; right: 0; background: var(--box);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--frame-out); border-radius: 25px 25px 0 0;
-            padding: 25px 20px; z-index: 2000; transition: bottom 0.4s ease; 
+            padding: 25px 20px; z-index: 2000; transition: bottom 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
             box-shadow: 0 -10px 40px rgba(0,0,0,0.8); font-family: Arial, sans-serif;
             max-height: 85vh; overflow-y: auto;
         }
@@ -132,7 +133,6 @@
         .retry-btn { background: var(--gold); color: #000; border: none; padding: 8px 20px; border-radius: 8px; margin-top: 15px; font-weight: bold; cursor: pointer; }
         #sentinel { height: 50px; } 
 
-        /* الجولة التعريفية */
         .tour-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         .tour-overlay.active { opacity: 1; pointer-events: auto; }
         .tour-box { background: var(--box); border: 2px solid var(--gold); border-radius: 15px; padding: 25px; width: 85%; max-width: 400px; text-align: center; margin-top: -15vh; box-shadow: 0 10px 40px rgba(0,0,0,0.9); transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-family: Arial, sans-serif; }
@@ -211,13 +211,13 @@
         <div class="settings-row" id="sizeRow">
             <div class="size-control">
                 <button class="sz-btn" onclick="changeFontSize(2)">+</button>
-                <span class="sz-disp" id="sizeDisplay">32</span>
+                <span class="sz-disp" id="sizeDisplay">34</span>
                 <button class="sz-btn" onclick="changeFontSize(-2)">-</button>
             </div>
         </div>
         
         <div class="settings-row">
-            <button class="setting-select" style="background:var(--gold); color:#000;" onclick="forceStartTour()">💡 تشغيل الجولة التعريفية</button>
+            <button class="setting-select tour-trigger-btn" onclick="forceStartTour()">💡 تشغيل الجولة التعريفية</button>
         </div>
     </div>
 
@@ -235,7 +235,7 @@
     <script>
         const toAr = (n) => n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
         let currentMode = 'surah'; let currentIndex = 1; let isFetching = false; let lastSuraRendered = '';
-        let currentFontSize = parseInt(localStorage.getItem('quran_size')) || 32; 
+        let currentFontSize = parseInt(localStorage.getItem('quran_size')) || 34; 
         let sInt; let isS = false; let speed = 0.5;
 
         let cursorTimeout;
@@ -332,21 +332,23 @@
                         
                         html += `<div class="sura-header"><span class="sura-name">${lastSuraRendered}</span>`;
                         if (ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
-                            // رسم البسملة خام
                             html += `<span class="basmalah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>`; 
                         }
                         html += `</div>`;
                     }
                     
-                    // استخدام النص الخام تماماً بدون أي دالة تلوين لضمان عدم الكسر
+                    // 🚀 النص الخام والمقدس.. لم نلمسه بأي كود 🚀
                     let text = ayah.text;
+                    
+                    // حذف البسملة المدمجة أول السورة
                     if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
                         text = text.replace(/^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\s*/i, "");
                         text = text.replace(/^بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ\s*/i, "");
                         text = text.replace(/^بِسْمِ.*?الرَّحِيمِ\s*/i, "");
                     }
                     
-                    html += `<span class="quran-text">${text}</span><span class="ayah-num">${toAr(ayah.numberInSurah)}</span> `;
+                    // الأقواس المذهبة المستقرة بدلاً من الدوائر المنعفطة
+                    html += `<span class="quran-text">${text}</span><span class="ayah-num">﴿ ${toAr(ayah.numberInSurah)} ﴾</span> `;
                 });
 
                 if (append) document.getElementById('content').insertAdjacentHTML('beforeend', html);
@@ -383,20 +385,29 @@
         }
         function changeSpeed(v) { speed = Math.max(0.2, Math.min(speed + v, 5)); }
 
-        // الجولة التعريفية المصغرة
         const tourSteps = [
-            { text: "👋 <b>مرحباً بك في مصحف التهجد النقي!</b><br><br>استغنينا عن الألوان لضمان ترابط الحروف وعلامات الوقف بشكل 100% كما في المصحف الورقي." },
-            { text: "✨ <b>أنت جاهز الآن!</b><br><br>اقرأ بثقة وخشوع.<br>تقبل الله طاعتك 🤲" }
+            { id: null, action: () => closeSheets(), text: "👋 <b>مرحباً بك في مصحف التهجد (الصافي)!</b><br><br>تم إلغاء كل الأكواد المعقدة لضمان بقاء الآيات متصلة ونقية 100% كما نزلت." },
+            { id: 'indexBtn', action: () => openSheet('indexSheet'), text: "📖 <b>الفهرس السريع</b><br><br>استخدم محرك البحث للوصول لأي سورة بلمح البصر." },
+            { id: 'pBtn', action: () => closeSheets(), text: "⏵ <b>التمرير التلقائي</b><br><br>استرخ واجعل النص يتدفق أمامك بسرعة تتحكم بها أنت." },
+            { id: null, action: () => closeSheets(), text: "✨ <b>أنت جاهز للانطلاق!</b><br><br>اقرأ بخشوع وطمأنينة.<br>تقبل الله طاعتك 🤲" }
         ];
         let currentTourStep = 0;
         function forceStartTour() { closeSheets(); currentTourStep = 0; document.body.classList.remove('reading-mode'); document.getElementById('tourOverlay').classList.add('active'); showTourStep(); }
-        function startTour() { if(localStorage.getItem('quran_tour_v8')) return; forceStartTour(); }
+        function startTour() { if(localStorage.getItem('quran_tour_v9')) return; forceStartTour(); }
         function showTourStep() {
-            document.getElementById('tourText').innerHTML = tourSteps[currentTourStep].text;
+            document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+            const step = tourSteps[currentTourStep];
+            if (step.action) step.action();
+            document.getElementById('tourText').innerHTML = step.text;
+            setTimeout(() => { if(step.id) { const target = document.getElementById(step.id); if(target) target.classList.add('tour-highlight'); } }, 400); 
+            let dotsHtml = '';
+            for(let i=0; i<tourSteps.length; i++) { dotsHtml += `<div class="tour-dot ${i === currentTourStep ? 'active' : ''}"></div>`; }
+            document.getElementById('tourDots').innerHTML = dotsHtml;
             document.getElementById('tourNextBtn').innerText = currentTourStep === tourSteps.length - 1 ? "ابدأ القراءة 📖" : "التالي ➔";
         }
         function nextTourStep() { if(currentTourStep < tourSteps.length - 1) { currentTourStep++; showTourStep(); } else { endTour(); } }
-        function endTour() { document.getElementById('tourOverlay').classList.remove('active'); closeSheets(); localStorage.setItem('quran_tour_v8', 'true'); }
+        function endTour() { document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight')); document.getElementById('tourOverlay').classList.remove('active'); closeSheets(); localStorage.setItem('quran_tour_v9', 'true'); }
+
     </script>
 </body>
 </html>
