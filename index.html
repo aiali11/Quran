@@ -3,26 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مصحف التهجد - الفيكتور الملكي</title>
+    <title>مصحف التهجد - الصافي</title>
     
     <style>
+        /* 👑 خط مجمع الملك فهد (النسخة المستقرة والمفتوحة المصدر) 👑 */
+        @font-face { 
+            font-family: 'Madinah'; 
+            src: url('https://cdn.alquran.cloud/public/fonts/KFGQPC_Uthmanic_Script_HAFS_Regular.woff2') format('woff2'); 
+            font-display: swap; 
+        }
+
         :root, [data-theme="oled"] {
-            --bg: #000000; --txt: #E5E7EB; --gold: #D4AF37; --box: rgba(20, 20, 20, 0.95); --frame-out: #333333; --mark-color: #D4AF37;
-            --font-size: 38px; /* حجم كبير لأن الفيكتور يحتاج مساحة ليبرز جماله */
+            --bg: #000000; --txt: #E5E7EB; --gold: #D4AF37; --box: rgba(20, 20, 20, 0.95); --frame-out: #333333; 
+            --font-size: 32px; 
         }
         
-        body[data-theme="navy"] { --bg: #0B132B; --txt: #E2E8F0; --gold: #FBBF24; --box: rgba(28, 37, 65, 0.95); --frame-out: #3A506B; --mark-color: #FBBF24; }
-        body[data-theme="sepia"] { --bg: #FDF6E3; --txt: #2C1A0B; --gold: #B8860B; --box: rgba(244, 232, 209, 0.95); --frame-out: #8B5A2B; --mark-color: #B8860B; }
+        body[data-theme="navy"] { --bg: #0B132B; --txt: #E2E8F0; --gold: #FBBF24; --box: rgba(28, 37, 65, 0.95); --frame-out: #3A506B; }
+        body[data-theme="sepia"] { --bg: #FDF6E3; --txt: #2C1A0B; --gold: #B8860B; --box: rgba(244, 232, 209, 0.95); --frame-out: #8B5A2B; }
 
         html { scroll-behavior: smooth; }
 
         body {
             margin: 0; padding: 0; padding-top: 70px; padding-bottom: 90px; 
             background-color: var(--bg); color: var(--txt);
-            text-align: center; direction: rtl; /* التوسيط الآن آمن 100% لأننا نستخدم فيكتور */
+            font-family: 'Madinah', Arial, sans-serif; 
+            text-align: right; /* المحاذاة الطبيعية لمنع التمدد */
+            direction: rtl;
             transition: background-color 0.4s, color 0.4s; overflow-x: hidden;
             user-select: none; -webkit-user-select: none; cursor: default;
         }
+
+        body.hide-cursor { cursor: none !important; }
 
         .container { width: 100%; margin: 0 auto; padding: 10px 15px; box-sizing: border-box; transition: max-width 0.4s ease; }
         body.layout-auto .container { max-width: 95%; } 
@@ -38,7 +49,8 @@
         }
         body.reading-mode .glass-header { transform: translateY(-100%); }
 
-        .icon-btn { background: transparent; color: var(--gold); border: none; font-size: 24px; cursor: pointer; outline: none; }
+        .icon-btn { background: transparent; color: var(--gold); border: none; font-size: 24px; cursor: pointer; outline: none; transition: transform 0.2s; }
+        .icon-btn:active { transform: scale(0.9); }
         .live-location { flex-grow: 1; text-align: center; color: var(--gold); font-size: 16px; font-weight: bold; font-family: Arial, sans-serif;}
 
         .floating-controls {
@@ -52,18 +64,26 @@
         .ctrl-btn { background: transparent; color: var(--txt); border: none; font-size: 15px; font-weight: bold; cursor: pointer; padding: 8px 15px; font-family: Arial, sans-serif;}
         .play-btn { background: var(--gold); color: #000; border-radius: 20px; padding: 8px 25px; font-size: 16px; font-weight: bold; }
 
-        /* 👑 هندسة الفيكتور القرآني (QCF) 👑 */
-        .quran-word { 
+        /* 👑 النص القرآني المتين (خام وبدون أي تلاعب) 👑 */
+        .quran-text { 
             font-size: var(--font-size); 
+            line-height: 2.3; 
             color: var(--txt);
-            display: inline-block; /* إجبار الكلمة أن تبقى ككتلة صلبة لا تنكسر */
-            line-height: 2.0;
-            transition: font-size 0.3s, color 0.3s;
+            display: inline;
+            text-rendering: optimizeLegibility;
+            font-feature-settings: "kern" 1, "liga" 1, "mkmk" 1; /* دعم التشكيل المعقد */
         }
-        
-        /* تلوين لفظ الجلالة وأرقام الآيات داخل الفيكتور */
-        .quran-word.allah { color: var(--mark-color); }
-        .quran-word.ayah-end { color: var(--mark-color); margin: 0 5px; font-size: calc(var(--font-size) * 0.9); }
+
+        .ayah-num { 
+            position: relative; display: inline-flex; align-items: center; justify-content: center; 
+            width: calc(var(--font-size) * 1.5); height: calc(var(--font-size) * 1.5); 
+            font-size: calc(var(--font-size) * 0.6); font-family: Arial, sans-serif; font-weight: bold; 
+            color: var(--txt); margin: 0 8px; vertical-align: middle; z-index: 1; line-height: 1;
+        }
+        .ayah-num::before { 
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--gold); 
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 C 80 10 95 30 95 50 C 95 70 80 90 50 95 C 20 90 5 70 5 50 C 5 30 20 10 50 5 Z" fill="none" stroke="black" stroke-width="6"/><circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2"/></svg>') center/contain no-repeat; z-index: -1; 
+        }
 
         .sura-header {
             display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 8px;
@@ -71,7 +91,8 @@
             padding: 15px; margin: 40px 0 20px 0; background-color: rgba(255,255,255,0.02);
             border-radius: 8px;
         }
-        .sura-name { color: var(--gold); font-size: 24px; font-family: Arial, sans-serif; font-weight: bold;}
+        .sura-name { color: var(--gold); font-size: calc(var(--font-size) * 1.3); }
+        .basmalah { color: var(--txt); font-size: var(--font-size); }
 
         .touch-zone { position: fixed; top: 15%; bottom: 15%; z-index: 500; }
         .touch-left { left: 0; width: 25%; }
@@ -95,7 +116,6 @@
         .size-control { display: flex; justify-content: space-between; align-items: center; background: rgba(128,128,128,0.15); border: 1px solid var(--frame-out); border-radius: 12px; padding: 8px; flex: 1; }
         .sz-btn { background: transparent; border: none; color: var(--txt); font-size: 26px; padding: 0 25px; cursor: pointer; }
         .sz-disp { color: var(--gold); font-weight: bold; font-size: 20px; }
-        .tour-trigger-btn { background: var(--gold) !important; color: #000 !important; font-size: 16px; }
 
         .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .tab-btn { background: rgba(128,128,128,0.15); color: var(--txt); border: 1px solid var(--frame-out); padding: 10px 20px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; flex: 1; transition: all 0.3s;}
@@ -109,6 +129,7 @@
         .index-item:hover { background: rgba(128,128,128,0.3); border-color: var(--gold); }
 
         .loading-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--gold); font-size: 16px; font-weight: bold; z-index: 100; background: var(--box); padding: 20px 30px; border-radius: 12px; border: 1px solid var(--gold); display: none; font-family: Arial, sans-serif; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .retry-btn { background: var(--gold); color: #000; border: none; padding: 8px 20px; border-radius: 8px; margin-top: 15px; font-weight: bold; cursor: pointer; }
         #sentinel { height: 50px; } 
 
         /* الجولة التعريفية */
@@ -141,7 +162,7 @@
     <div class="touch-zone touch-center" onclick="toggleFocus()"></div>
     <div class="touch-zone touch-right" onclick="scrollPage(-1)"></div>
 
-    <div id="loading" class="loading-box">جاري جلب الفيكتور ⏳...</div>
+    <div id="loading" class="loading-box">جاري جلب الآيات ⏳...</div>
 
     <div class="container">
         <div id="content"></div>
@@ -168,7 +189,7 @@
 
     <div class="bottom-sheet" id="settingsSheet">
         <button class="sheet-close" onclick="closeSheets()">✖</button>
-        <div class="sheet-title">إعدادات العرض (الفيكتور)</div>
+        <div class="sheet-title">إعدادات العرض (الصافية)</div>
         
         <div class="settings-row" id="layoutRow">
             <select class="setting-select" id="layoutSelect" onchange="changeLayout(this.value)">
@@ -183,23 +204,20 @@
                 <option value="oled">🌑 ليلي عميق (OLED)</option>
                 <option value="navy">🌌 كحلي هادئ</option>
                 <option value="sepia">📜 ورق عتيق</option>
-            </select>
-            <select class="setting-select" id="colorSelect" onchange="changeColor(this.value)">
-                <option value="#D4AF37">✨ تمييز ذهبي (افتراضي)</option>
-                <option value="#8B1E13">🔴 تمييز عنابي</option>
-                <option value="#16A34A">💚 تمييز أخضر</option>
+                <option value="light">☀️ نهار ناصع</option>
             </select>
         </div>
 
         <div class="settings-row" id="sizeRow">
             <div class="size-control">
                 <button class="sz-btn" onclick="changeFontSize(2)">+</button>
-                <span class="sz-disp" id="sizeDisplay">38</span>
+                <span class="sz-disp" id="sizeDisplay">32</span>
                 <button class="sz-btn" onclick="changeFontSize(-2)">-</button>
             </div>
         </div>
+        
         <div class="settings-row">
-            <button class="setting-select tour-trigger-btn" onclick="forceStartTour()">💡 تشغيل الجولة التعريفية مرة أخرى</button>
+            <button class="setting-select" style="background:var(--gold); color:#000;" onclick="forceStartTour()">💡 تشغيل الجولة التعريفية</button>
         </div>
     </div>
 
@@ -215,167 +233,45 @@
     </div>
 
     <script>
-        const suraNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-        const juzStartPages = [1, 22, 42, 62, 82, 102, 122, 142, 162, 182, 202, 222, 242, 262, 282, 302, 322, 342, 362, 382, 402, 422, 442, 462, 482, 502, 522, 542, 562, 582];
-        
-        let loadedFonts = new Set();
-        let currentPageApi = 1;
-        let isFetching = false;
-        let currentSuraTracker = '';
-
-        let currentFontSize = parseInt(localStorage.getItem('quran_size')) || 38; 
+        const toAr = (n) => n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+        let currentMode = 'surah'; let currentIndex = 1; let isFetching = false; let lastSuraRendered = '';
+        let currentFontSize = parseInt(localStorage.getItem('quran_size')) || 32; 
         let sInt; let isS = false; let speed = 0.5;
 
-        // 👑 الحقن الذكي: تحميل ملف الفيكتور الخاص بالصفحة فقط 👑
-        function injectVectorFont(pageNum) {
-            if (!loadedFonts.has(pageNum)) {
-                const style = document.createElement('style');
-                style.innerHTML = `
-                    @font-face {
-                        font-family: 'p${pageNum}';
-                        src: url('https://quran.com/fonts/quran/hafs/v1/woff2/p${pageNum}.woff2') format('woff2');
-                        font-display: block; /* يخفي الرموز المشوهة حتى يكتمل تحميل الفيكتور الماسي */
-                    }
-                    .page-${pageNum} { font-family: 'p${pageNum}', sans-serif; }
-                `;
-                document.head.appendChild(style);
-                loadedFonts.add(pageNum);
-            }
-        }
+        let cursorTimeout;
+        window.addEventListener('mousemove', () => {
+            document.body.classList.remove('hide-cursor'); clearTimeout(cursorTimeout);
+            if (isS) { cursorTimeout = setTimeout(() => { document.body.classList.add('hide-cursor'); }, 3000); }
+        });
 
-        document.addEventListener("DOMContentLoaded", async () => {
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') { e.preventDefault(); toggleAutoScroll(); }
+            if (e.code === 'ArrowDown' || e.code === 'ArrowLeft') { e.preventDefault(); scrollPage(1); }
+            if (e.code === 'ArrowUp' || e.code === 'ArrowRight') { e.preventDefault(); scrollPage(-1); }
+        });
+
+        const suraNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
+
+        document.addEventListener("DOMContentLoaded", () => {
             document.documentElement.style.setProperty('--font-size', currentFontSize + 'px');
             document.getElementById('sizeDisplay').innerText = currentFontSize;
             
             let savedTheme = localStorage.getItem('quran_theme_mode') || 'oled';
             document.body.setAttribute('data-theme', savedTheme); document.getElementById('themeSelect').value = savedTheme;
             
-            let savedColor = localStorage.getItem('quran_color'); 
-            if (savedColor) { document.body.style.setProperty('--mark-color', savedColor); document.body.style.setProperty('--gold', savedColor); document.getElementById('colorSelect').value = savedColor; }
-            
             let savedLayout = localStorage.getItem('quran_layout') || 'auto'; 
             document.body.className = 'layout-' + savedLayout; document.getElementById('layoutSelect').value = savedLayout;
 
             const surahGrid = document.getElementById('surahGrid');
-            suraNames.forEach((name, i) => { surahGrid.innerHTML += `<button class="index-item" onclick="startFromChapter(${i+1})">${i+1}. ${name}</button>`; });
+            suraNames.forEach((name, i) => { surahGrid.innerHTML += `<button class="index-item" onclick="loadQuran('surah', ${i+1})">${i+1}. ${name}</button>`; });
             const juzGrid = document.getElementById('juzGrid');
-            juzStartPages.forEach((pageNum, i) => { juzGrid.innerHTML += `<button class="index-item" onclick="startFromPage(${pageNum}, 'الجزء ${i+1}')">الجزء ${i+1}</button>`; });
+            for(let i=1; i<=30; i++) { juzGrid.innerHTML += `<button class="index-item" onclick="loadQuran('juz', ${i})">الجزء ${toAr(i)}</button>`; }
 
-            let savedPage = parseInt(localStorage.getItem('quran_last_page')) || 1;
-            startFromPage(savedPage, 'المصحف');
+            let savedMode = localStorage.getItem('quran_last_mode'); let savedIndex = parseInt(localStorage.getItem('quran_last_index'));
+            if (!savedMode || isNaN(savedIndex)) { savedMode = 'surah'; savedIndex = 1; }
 
-            setTimeout(startTour, 1000);
+            loadQuran(savedMode, savedIndex);
         });
-
-        // 🌟 المحرك الجبار: جلب الفيكتور عبر واجهة API الإصدار الرابع 🌟
-        async function fetchVectorPage(pageNum, append = false) {
-            if (pageNum > 604 || isFetching) return;
-            isFetching = true;
-            
-            const loadingBox = document.getElementById('loading');
-            loadingBox.style.display = 'block';
-
-            if (!append) { document.getElementById('content').innerHTML = ''; window.scrollTo(0,0); }
-
-            // حقن الفيكتور الخاص بالصفحة
-            injectVectorFont(pageNum);
-
-            try {
-                // الاتصال بسيرفرات القرآن وجلب كود الفيكتور + النص العادي (للتلوين)
-                const response = await fetch(`https://api.quran.com/api/v4/verses/by_page/${pageNum}?words=true&word_fields=code_v1,text_uthmani`);
-                const data = await response.json();
-                
-                let html = '';
-                
-                data.verses.forEach(verse => {
-                    let chapterId = verse.verse_key.split(':')[0];
-                    let suraName = suraNames[parseInt(chapterId) - 1];
-
-                    // طباعة ترويسة السورة
-                    if (chapterId !== currentSuraTracker) {
-                        currentSuraTracker = chapterId;
-                        html += `<div class="sura-header"><span class="sura-name">سورة ${suraName}</span></div><br>`;
-                        document.getElementById('liveLocation').innerText = `سورة ${suraName}`;
-                    }
-
-                    // طباعة كل كلمة كرسمة فيكتور مستقلة ومغلقة!
-                    verse.words.forEach(word => {
-                        let className = `quran-word page-${pageNum}`;
-                        
-                        // تلوين لفظ الجلالة
-                        if (word.text_uthmani && word.text_uthmani.match(/(ٱللَّهِ|ٱللَّهُ|ٱللَّهَ|لِلَّهِ|اللَّهِ|اللَّهُ|اللَّهَ)/)) {
-                            className += ' allah';
-                        }
-                        
-                        // تصغير وتلوين دوائر الآيات
-                        if (word.char_type_name === 'end') {
-                            className += ' ayah-end';
-                        }
-                        
-                        if(word.code_v1) {
-                            html += `<span class="${className}">${word.code_v1}</span> `;
-                        }
-                    });
-                });
-
-                document.getElementById('content').insertAdjacentHTML('beforeend', html);
-                currentPageApi = pageNum;
-                localStorage.setItem('quran_last_page', pageNum);
-                
-            } catch (error) { console.error("Error:", error); loadingBox.innerHTML = `❌ حدث خطأ بالاتصال`; setTimeout(()=>{loadingBox.style.display='none';}, 2000); } 
-            finally { isFetching = false; loadingBox.style.display = 'none'; }
-        }
-
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !isFetching && document.getElementById('content').innerHTML !== '') { 
-                fetchVectorPage(currentPageApi + 1, true); 
-            }
-        }, { rootMargin: '500px' });
-        observer.observe(document.getElementById('sentinel'));
-
-        async function startFromChapter(chapterId) {
-            closeSheets(); document.getElementById('loading').style.display = 'block';
-            try {
-                const res = await fetch(`https://api.quran.com/api/v4/chapters/${chapterId}`);
-                const data = await res.json();
-                const startPage = data.chapter.pages[0];
-                currentSuraTracker = ''; 
-                fetchVectorPage(startPage, false);
-            } catch(e){}
-        }
-
-        function startFromPage(pageNum, label) {
-            closeSheets();
-            document.getElementById('liveLocation').innerText = label;
-            currentSuraTracker = '';
-            fetchVectorPage(pageNum, false);
-        }
-
-        // الجولة التعريفية ووظائف الواجهة
-        const tourSteps = [
-            { id: null, action: () => closeSheets(), text: "👋 <b>مرحباً بك في مصحف التهجد (نسخة الفيكتور)!</b><br><br>الآن الآيات تعرض كرسومات عالية الدقة خالية من الأخطاء والتقطيع." },
-            { id: 'indexBtn', action: () => openSheet('indexSheet'), text: "📖 <b>الفهرس الذكي</b><br><br>محرك بحث فوري لتصل لسورتك بضغطة زر!" },
-            { id: 'sizeRow', action: () => openSheet('settingsSheet'), text: "🔍 <b>حجم الآيات</b><br><br>الفيكتور يسمح لك بتكبير الخط لأي حجم دون أن يفقد دقته!" },
-            { id: 'pBtn', action: () => closeSheets(), text: "⏵ <b>التمرير التلقائي</b><br><br>شغّل هذا الزر ليتدفق النص أمامك تلقائياً كشريط سينمائي." },
-            { id: null, action: () => closeSheets(), text: "✨ <b>أنت جاهز للانطلاق!</b><br><br>ارفع المشروع على GitHub واقرأ بخشوع.<br>تقبل الله طاعتك 🤲" }
-        ];
-        
-        let currentTourStep = 0;
-        function forceStartTour() { closeSheets(); currentTourStep = 0; document.body.classList.remove('reading-mode'); document.getElementById('tourOverlay').classList.add('active'); showTourStep(); }
-        function startTour() { if(localStorage.getItem('quran_tour_v7')) return; document.body.classList.remove('reading-mode'); document.getElementById('tourOverlay').classList.add('active'); showTourStep(); }
-        function showTourStep() {
-            document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
-            const step = tourSteps[currentTourStep];
-            if (step.action) step.action();
-            document.getElementById('tourText').innerHTML = step.text;
-            setTimeout(() => { if(step.id) { const target = document.getElementById(step.id); if(target) target.classList.add('tour-highlight'); } }, 400); 
-            let dotsHtml = '';
-            for(let i=0; i<tourSteps.length; i++) { dotsHtml += `<div class="tour-dot ${i === currentTourStep ? 'active' : ''}"></div>`; }
-            document.getElementById('tourDots').innerHTML = dotsHtml;
-            if(currentTourStep === tourSteps.length - 1) { document.getElementById('tourNextBtn').innerText = "ابدأ القراءة 📖"; } else { document.getElementById('tourNextBtn').innerText = "التالي ➔"; }
-        }
-        function nextTourStep() { if(currentTourStep < tourSteps.length - 1) { currentTourStep++; showTourStep(); } else { endTour(); } }
-        function endTour() { document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight')); document.getElementById('tourOverlay').classList.remove('active'); closeSheets(); localStorage.setItem('quran_tour_v7', 'true'); }
 
         function switchIndexTab(tab) {
             document.getElementById('surahGrid').style.display = tab === 'surah' ? 'grid' : 'none';
@@ -384,30 +280,123 @@
             document.getElementById('tabSurah').classList.toggle('active', tab === 'surah');
             document.getElementById('tabJuz').classList.toggle('active', tab === 'juz');
         }
-        function filterSurahs() { let input = document.getElementById('suraSearch').value; document.querySelectorAll('#surahGrid .index-item').forEach(btn => { btn.style.display = btn.innerText.includes(input) ? '' : 'none'; }); }
+
+        function filterSurahs() {
+            let input = document.getElementById('suraSearch').value;
+            document.querySelectorAll('#surahGrid .index-item').forEach(btn => {
+                btn.style.display = btn.innerText.includes(input) ? '' : 'none';
+            });
+        }
+
         function openSheet(id) { closeSheets(); document.getElementById(id).classList.add('active'); document.body.classList.remove('reading-mode'); }
         function closeSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('active')); }
         function toggleFocus() { document.body.classList.toggle('reading-mode'); closeSheets(); }
         function changeTheme(val) { document.body.setAttribute('data-theme', val); localStorage.setItem('quran_theme_mode', val); }
         function changeLayout(val) { document.body.className = 'layout-' + val; localStorage.setItem('quran_layout', val); }
-        function changeColor(val) { document.body.style.setProperty('--mark-color', val); document.body.style.setProperty('--gold', val); localStorage.setItem('quran_color', val); }
         function changeFontSize(step) {
-            currentFontSize += step; if(currentFontSize < 20) currentFontSize = 20; if(currentFontSize > 150) currentFontSize = 150;
+            currentFontSize += step; if(currentFontSize < 14) currentFontSize = 14; if(currentFontSize > 100) currentFontSize = 100;
             document.documentElement.style.setProperty('--font-size', currentFontSize + 'px');
             document.getElementById('sizeDisplay').innerText = currentFontSize; localStorage.setItem('quran_size', currentFontSize);
         }
-        function toggleFullScreen() { if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); } else { if (document.exitFullscreen) { document.exitFullscreen(); } } }
-        function scrollPage(direction) { window.scrollBy({ top: direction * (window.innerHeight * 0.85), behavior: 'smooth' }); document.body.classList.add('reading-mode'); }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); } 
+            else { if (document.exitFullscreen) { document.exitFullscreen(); } }
+        }
+
+        async function loadQuran(mode, index, append = false) {
+            index = parseInt(index);
+            if (isNaN(index)) return; 
+            if ((mode === 'juz' && index > 30) || (mode === 'surah' && index > 114)) { document.getElementById('loading').innerHTML = 'تم الختم 🌙'; document.getElementById('loading').style.display = 'block'; return; }
+            if (isFetching) return; isFetching = true;
+
+            closeSheets();
+            const loadingBox = document.getElementById('loading');
+            loadingBox.innerHTML = 'جاري جلب الآيات ⏳...'; loadingBox.style.display = 'block';
+
+            if (!append) { document.getElementById('content').innerHTML = ''; lastSuraRendered = ''; window.scrollTo(0,0); }
+
+            if (mode === 'juz') { document.getElementById('liveLocation').innerText = `الجزء ${toAr(index)}`; } 
+
+            try {
+                // الاعتماد على النص العثماني السليم والموثوق من سيرفرات القران الكريم المفتوحة
+                const response = await fetch(`https://api.alquran.cloud/v1/${mode}/${index}/quran-uthmani`);
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                
+                let html = '';
+                data.data.ayahs.forEach((ayah) => {
+                    if (ayah.surah.name !== lastSuraRendered) {
+                        lastSuraRendered = ayah.surah.name;
+                        if(mode === 'surah') document.getElementById('liveLocation').innerText = `سورة ${lastSuraRendered}`;
+                        
+                        html += `<div class="sura-header"><span class="sura-name">${lastSuraRendered}</span>`;
+                        if (ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
+                            // رسم البسملة خام
+                            html += `<span class="basmalah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>`; 
+                        }
+                        html += `</div>`;
+                    }
+                    
+                    // استخدام النص الخام تماماً بدون أي دالة تلوين لضمان عدم الكسر
+                    let text = ayah.text;
+                    if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && ayah.surah.number !== 9) { 
+                        text = text.replace(/^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\s*/i, "");
+                        text = text.replace(/^بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ\s*/i, "");
+                        text = text.replace(/^بِسْمِ.*?الرَّحِيمِ\s*/i, "");
+                    }
+                    
+                    html += `<span class="quran-text">${text}</span><span class="ayah-num">${toAr(ayah.numberInSurah)}</span> `;
+                });
+
+                if (append) document.getElementById('content').insertAdjacentHTML('beforeend', html);
+                else document.getElementById('content').innerHTML = html;
+                
+                currentMode = mode; currentIndex = index;
+                localStorage.setItem('quran_last_mode', mode); localStorage.setItem('quran_last_index', index);
+                loadingBox.style.display = 'none';
+                
+            } catch (error) { loadingBox.innerHTML = `❌ حدث خطأ بالاتصال<br><button class="retry-btn" onclick="loadQuran('${mode}', ${index}, ${append})">إعادة المحاولة 🔄</button>`; } 
+            finally { isFetching = false; }
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !isFetching && document.getElementById('content').innerHTML !== '') { loadQuran(currentMode, currentIndex + 1, true); }
+        });
+        observer.observe(document.getElementById('sentinel'));
+
+        function scrollPage(direction) {
+            window.scrollBy({ top: direction * (window.innerHeight * 0.85), behavior: 'smooth' });
+            document.body.classList.add('reading-mode'); 
+        }
+
         function toggleAutoScroll() {
             const btn = document.getElementById('pBtn');
-            if (isS) { clearInterval(sInt); isS = false; btn.innerHTML = 'تلقائي ⏵'; btn.style.backgroundColor = 'var(--gold)'; btn.style.color = '#000'; } 
-            else { sInt = setInterval(() => window.scrollBy({ top: speed * 3, behavior: 'auto' }), 50); isS = true; btn.innerHTML = 'إيقاف ⏸'; btn.style.backgroundColor = '#DC2626'; btn.style.color = 'white'; document.body.classList.add('reading-mode'); closeSheets(); }
+            if (isS) { 
+                clearInterval(sInt); isS = false; 
+                btn.innerHTML = 'تلقائي ⏵ (Space)'; btn.style.backgroundColor = 'var(--gold)'; btn.style.color = '#000';
+            } else { 
+                sInt = setInterval(() => window.scrollBy({ top: speed * 3, behavior: 'auto' }), 50); isS = true; 
+                btn.innerHTML = 'إيقاف ⏸'; btn.style.backgroundColor = '#DC2626'; btn.style.color = 'white';
+                document.body.classList.add('reading-mode'); closeSheets();
+            }
         }
         function changeSpeed(v) { speed = Math.max(0.2, Math.min(speed + v, 5)); }
-        
-        let cursorTimeout;
-        window.addEventListener('mousemove', () => { document.body.classList.remove('hide-cursor'); clearTimeout(cursorTimeout); if (isS) { cursorTimeout = setTimeout(() => { document.body.classList.add('hide-cursor'); }, 3000); } });
-        document.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); toggleAutoScroll(); } if (e.code === 'ArrowDown' || e.code === 'ArrowLeft') { e.preventDefault(); scrollPage(1); } if (e.code === 'ArrowUp' || e.code === 'ArrowRight') { e.preventDefault(); scrollPage(-1); } });
+
+        // الجولة التعريفية المصغرة
+        const tourSteps = [
+            { text: "👋 <b>مرحباً بك في مصحف التهجد النقي!</b><br><br>استغنينا عن الألوان لضمان ترابط الحروف وعلامات الوقف بشكل 100% كما في المصحف الورقي." },
+            { text: "✨ <b>أنت جاهز الآن!</b><br><br>اقرأ بثقة وخشوع.<br>تقبل الله طاعتك 🤲" }
+        ];
+        let currentTourStep = 0;
+        function forceStartTour() { closeSheets(); currentTourStep = 0; document.body.classList.remove('reading-mode'); document.getElementById('tourOverlay').classList.add('active'); showTourStep(); }
+        function startTour() { if(localStorage.getItem('quran_tour_v8')) return; forceStartTour(); }
+        function showTourStep() {
+            document.getElementById('tourText').innerHTML = tourSteps[currentTourStep].text;
+            document.getElementById('tourNextBtn').innerText = currentTourStep === tourSteps.length - 1 ? "ابدأ القراءة 📖" : "التالي ➔";
+        }
+        function nextTourStep() { if(currentTourStep < tourSteps.length - 1) { currentTourStep++; showTourStep(); } else { endTour(); } }
+        function endTour() { document.getElementById('tourOverlay').classList.remove('active'); closeSheets(); localStorage.setItem('quran_tour_v8', 'true'); }
     </script>
 </body>
 </html>
